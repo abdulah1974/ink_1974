@@ -28,13 +28,18 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  bouncing_widget: ^2.0.0
+  peek_and_pop: ^1.0.3
+  scroll_snap_list: ^0.8.4
+  get: ^4.6.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   custom_navigation_bar:
-  flutter_native_splash:
-  dotted_border:
+
+  shimmer: ^1.1.1
+  shake_animation_widget: ^1.0.0
   image_picker: ^0.8.2
   flutter_spinkit: "^4.1.2"
   google_fonts:
@@ -42,7 +47,8 @@ dev_dependencies:
   adaptive_action_sheet: ^2.0.0
   http: ^0.13.4
   flappy_search_bar:
-  flutter_speed_dial:
+
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

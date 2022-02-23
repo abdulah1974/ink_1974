@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flappy_search_bar/scaled_tile.dart';
+import 'package:http/http.dart' as http3;
 class search_user extends StatefulWidget {
   const search_user({Key? key}) : super(key: key);
 
@@ -9,111 +12,113 @@ class search_user extends StatefulWidget {
 }
 
 class _search_userState extends State<search_user> {
-  TextEditingController _textController = TextEditingController();
+  late TextEditingController _controller;
+  late List<Map<String, dynamic>> _loadedPhotos = [];
 
-  static List<String> mainDataList = [
-  "Apple",
-  "Apricot",
-  "Banana",
-  "Blackberry",
-  "Coconut",
-  "Date",
-  "Fig",
-  "Gooseberry",
-  "Grapes",
-  "Lemon",
-  "Litchi",
-  "Mango",
-  "Orange",
-  "Papaya",
-  "Peach",
-  "Pineapple",
-  "Pomegranate",
-  "Starfruit"
-];
-  List<String> newDataList = List.from(mainDataList);
 
-  onItemChanged(String value) {
+
+  void search() async {
+    var response = await http3
+
+        .get(Uri.parse(
+        "http://192.168.100.42:3020/serch?username="+_controller.text),);
+
+    var json = jsonDecode(response.body);
+
+
     setState(() {
-      newDataList = mainDataList
-          .where((string) => string.toLowerCase().contains(value.toLowerCase()))
-          .toList();
+      _loadedPhotos = json;
+
     });
   }
+
+
+
+
+
+
+  // This list holds the data for the list view
+  List<Map<String, dynamic>> _foundUsers = [];
+  @override
+  initState() {
+    // at the beginning, all users are shown
+    _foundUsers = _loadedPhotos;
+    _controller = TextEditingController();
+    super.initState();
+  }
+
+  // This function is called whenever the text field changes
+  void _runFilter(String enteredKeyword) {
+    List<Map<String, dynamic>> results = [];
+    if (enteredKeyword.isEmpty) {
+      // if the search field is empty or only contains white-space, we'll display all users
+      results = _loadedPhotos;
+    } else {
+      results = _loadedPhotos
+          .where((user) =>
+          user["username"].toLowerCase().contains(enteredKeyword.toLowerCase()))
+          .toList();
+      // we use the toLowerCase() method to make it case-insensitive
+    }
+
+    // Refresh the UI
+    setState(() {
+      _foundUsers = results;
+    });
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(1, 4, 30, 1),
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(1, 4, 30, 1),
-        title: Text("Search"),
+        title: const Text('Search'),
       ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              cursorColor: Colors.white,
-              controller: _textController,
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintStyle: TextStyle(color: Colors.white),
-                hintText: 'Search Here...',
-              ),
-              onChanged: onItemChanged,
+      body: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 20,
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-                itemCount: newDataList.length,
-                physics: BouncingScrollPhysics(),
-                itemBuilder:(BuildContext context, int index){
-                  return  Column(
-                    children: [
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 10,
+            TextField(
+              controller:_controller,
+              onChanged: (value) => _runFilter(value),
+              decoration: const InputDecoration(
+                  labelText: 'Search', suffixIcon: Icon(Icons.search)),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Expanded(
+              child: _foundUsers.isNotEmpty
+                  ? ListView.builder(
+                itemCount: _foundUsers.length,
+                itemBuilder: (context, index) => Card(
+                  key: ValueKey(_foundUsers[index]["username"]),
+                  color: Colors.amberAccent,
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: ListTile(
+                    leading: Text(
+                      _foundUsers[index]["id"].toString(),
+                      style: const TextStyle(fontSize: 24),
+                    ),
+                    title: Text(_foundUsers[index]['username']),
 
-                          ),
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                fit: BoxFit.fill,
-                                image: NetworkImage("https://www.instagram.com/static/images/ico/favicon-192.png/68d99ba29cc8.png"),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            newDataList[index],
-                            style:
-                            TextStyle(color: Colors.white, fontSize: 15),
-                          ),
-                          SizedBox(
-                            width: 184,
-                          ),
-
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-
-                    ],
-                  );
-                }),
-          )
-        ],
+                  ),
+                ),
+              )
+                  : const Text(
+                'No results found',
+                style: TextStyle(fontSize: 24),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+

@@ -25,7 +25,7 @@ class _ButtonState extends State<Button> {
     favorite(),
     account(),
   ];
-
+  late bool sel=true;
 
 
   @override
@@ -45,7 +45,7 @@ class _ButtonState extends State<Button> {
       iconSize: 30.0,
       selectedColor:Colors.white,
       strokeColor: Color(0x30040307),
-      unSelectedColor: Colors.white60,
+      unSelectedColor: Colors.white70,
       backgroundColor: Color.fromRGBO(1, 4, 30, 1),
       items: [
         CustomNavigationBarItem(
@@ -65,20 +65,21 @@ class _ButtonState extends State<Button> {
           //   showBadge: _badgeShows[3],
         ),
         CustomNavigationBarItem(
-          icon: Icon(  Icons.favorite,size: 30,),
+          icon:Icon(Icons.favorite,size: 30,),
 
           //   badgeCount: _badgeCounts[4],
           //   showBadge: _badgeShows[4],
         ),
         CustomNavigationBarItem(
-          icon: Icon(Icons.account_circle,size: 30,),
+          icon: Icon(Icons.account_circle_outlined,size: 30,),
+
         ),
       ],
-        currentIndex: _currentIndex,
+        currentIndex:_currentIndex,
       onTap: (index) {
         setState(() {
-
           _currentIndex=index;
+
         });
       },
     );

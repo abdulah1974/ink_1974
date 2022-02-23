@@ -1,11 +1,12 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:http/http.dart' as http;
 class add_post extends StatefulWidget {
   const add_post({Key? key}) : super(key: key);
 
@@ -44,6 +45,26 @@ class _accountState extends State<add_post> {
   void initState() {
    enableButton();
     super.initState();
+  }
+
+
+  upload(File imageFile) async {
+    var stream =
+    new http.ByteStream(imageFile.openRead());
+
+    var length = await imageFile.length();
+
+    var uri = Uri.parse("http://192.168.100.42:3020/postimg?email=abdullah@gmail.com&password=abd");
+
+    var request = new http.MultipartRequest("POST", uri);
+    var multipartFile = new http.MultipartFile('recfile', stream, length,
+        filename:(imageFile.path));
+    request.files.add(multipartFile);
+    var response = await request.send();
+    print(response.statusCode);
+    response.stream.transform(utf8.decoder).listen((value) {
+      print(value);
+    });
   }
 
   @override
@@ -90,18 +111,7 @@ class _accountState extends State<add_post> {
                     backgroundColor: Color.fromRGBO(1, 4, 30, 1),
                     body: Stack(
                       children: <Widget>[
-                        Container(
-                          height: 360,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(50.0),
-                                  bottomRight: Radius.circular(50.0)),
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [],
-                              )),
-                        ),
+
                         Container(
                           margin: const EdgeInsets.only(top: 80),
                           child: Column(
@@ -122,7 +132,36 @@ class _accountState extends State<add_post> {
                                     borderRadius:
                                     BorderRadius.circular(30.0),
                                     child: _imageFile != null
-                                        ? Image.file(_imageFile!)
+                                        ? Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 300,
+
+                                          child: Image.file(_imageFile!),
+                                        ),
+                                        SizedBox(height: 50,),
+                                    TextButton(
+                                      onPressed: () {
+                                      setState(() {
+                                        upload(_imageFile!);
+                                        _imageFile = null;
+                                      });
+                                      },
+                                      style: ButtonStyle(
+                                          side: MaterialStateProperty.all(
+                                              const BorderSide(
+                                                  width: 2, color: Colors.white)),
+                                          foregroundColor:
+                                          MaterialStateProperty.all(Colors.red),
+                                          padding: MaterialStateProperty.all(
+                                              const EdgeInsets.symmetric(
+                                                  vertical: 5, horizontal: 20)),
+                                          textStyle: MaterialStateProperty.all(
+                                              const TextStyle(fontSize: 25))),
+                                      child: Text("upload"),
+                                    ),
+                                      ],
+                                    )
                                         : Icon(
                                       Icons.add_a_photo,
                                       color: Colors.white,
@@ -130,20 +169,11 @@ class _accountState extends State<add_post> {
                                     ),
 
                                   ),
+
                                 ),
+
                               ),
-                              Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 5.0, horizontal: 16.0),
-                                  margin: const EdgeInsets.only(
-                                      top: 30,
-                                      left: 20.0,
-                                      right: 20.0,
-                                      bottom: 20.0),
-                                  decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                    colors: [],
-                                  )))
+
                             ],
                           ),
                         ),
@@ -171,32 +201,9 @@ class _accountState extends State<add_post> {
             ),
           ],
         ),
-        floatingActionButton: SpeedDial(
-          animatedIcon: AnimatedIcons.menu_close,
-          backgroundColor: Color.fromRGBO(1, 4, 30, 1),
-          overlayColor: Color.fromRGBO(1, 4, 30, 1),
-          overlayOpacity: 0.5,
-          spacing: 15,
-          spaceBetweenChildren: 15,
-          closeManually: true,
-          children: [
-            SpeedDialChild(
-                child: Icon(Icons.drive_folder_upload),
-                label: 'Image',
-                onTap: () {
-                  getImage();
 
-                  print('Mail Tapped');
-                }),
-            SpeedDialChild(
-                child: Icon(Icons.text_fields_rounded),
-                label: 'Text',
-                onTap: () {
-                  print('Copy Tapped');
-                }),
-          ],
-        ),
       ),
     );
   }
 }
+

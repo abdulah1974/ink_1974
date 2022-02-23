@@ -1,24 +1,70 @@
+import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 class comment extends StatefulWidget {
-  const comment({Key? key}) : super(key: key);
+ late int id;
+
+ comment(int id2){
+   id=id2;
+ }
 
   @override
-  _commentState createState() => _commentState();
+  _commentState createState() => _commentState(id);
 }
 
 class _commentState extends State<comment> {
-  final List<String> names = <String>["منور","حلو","روعه"];
+
+  late int id;
+  _commentState(int id2){
+    id=id2;
+  }
+
+
   TextEditingController nameController = TextEditingController();
 
-  void addItemToList(){
-    setState(() {
-      names.insert(0,nameController.text);
 
+  void comment1() async {
+
+    var response = await http
+        .get(Uri.parse("http://192.168.100.42:3020/comment?id="+id.toString()+"&comment="+nameController.text));
+    var jsondata = jsonDecode(response.body);
+
+
+    setState(() {
+      _loadedPhotos = jsondata;
     });
   }
 
+
+
+  void addItemToList(){
+    setState(() {
+   comment1();
+    });
+  }
+
+  List _loadedPhotos = [];
+
+
+
+  void aa() async {
+    var response = await http
+        .get(Uri.parse("http://192.168.100.42:3020/getcomment?post_id="+id.toString()));
+    var jsondata = jsonDecode(response.body);
+
+    setState(() {
+      _loadedPhotos = jsondata;
+    });
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    aa();
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,8 +126,7 @@ class _commentState extends State<comment> {
   Widget postComment()
        {
     return  ListView.builder(
-
-        itemCount: names.length,
+        itemCount: _loadedPhotos.length,
         physics: BouncingScrollPhysics(),
         itemBuilder:(BuildContext context, int index){
           return  Column(
@@ -101,7 +146,7 @@ class _commentState extends State<comment> {
                       shape: BoxShape.circle,
                       image: DecorationImage(
                         fit: BoxFit.fill,
-                        image: NetworkImage("https://www.instagram.com/static/images/ico/favicon-192.png/68d99ba29cc8.png"),
+                        image: NetworkImage("http://192.168.100.42:3020/get_trnd2_image?path="+_loadedPhotos[index]["profile_photo"]),
                       ),
                     ),
                   ),
@@ -109,7 +154,7 @@ class _commentState extends State<comment> {
                     width: 10,
                   ),
                   Text(
-                    "abdullah",
+                    _loadedPhotos[index]["username"],
                     style:
                     TextStyle(color: Colors.white, fontSize: 15),
                   ),
@@ -123,7 +168,7 @@ class _commentState extends State<comment> {
                 height: 10,
               ),
               Text(
-                  names[index],
+                  _loadedPhotos[index]["comment"],
                   style: TextStyle(color: Colors.white, fontSize: 15,)
               ),
 
