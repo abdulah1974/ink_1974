@@ -32,7 +32,7 @@ class _accountState extends State<favorite> {
   void follower() async {
     var response = await http3
         .get(Uri.parse(
-        "http://192.168.100.42:2000/getfollowing6666?account_id=2"),);
+        "http://192.168.100.42:2001/getfollowing6666?account_id=2"),);
 
     var json = jsonDecode(response.body);
 
@@ -52,7 +52,7 @@ class _accountState extends State<favorite> {
   void getlike() async {
     var response = await http3
         .get(Uri.parse(
-        "http://192.168.100.42:2000/getMylikes?user_id=2"),);
+        "http://192.168.100.42:2001/getMylikes?user_id=2"),);
     var json = jsonDecode(response.body);
     setState(() {
       like = json;
@@ -125,7 +125,7 @@ class _accountState extends State<favorite> {
   int? _destinationIndex;
   void following(var i) async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:2000/follow?email=abdullah@gmail.com&password=abd&account_id="+i.toString()));
+        .get(Uri.parse("http://192.168.100.42:2001/follow?email=abdullah@gmail.com&password=abd&account_id="+i.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
@@ -194,7 +194,7 @@ class _accountState extends State<favorite> {
                                  image: DecorationImage(
                                    fit: BoxFit.cover,
                                    image: NetworkImage(
-                                     "http://192.168.100.42:2000/get_trnd2_image?path=" +
+                                     "http://192.168.100.42:2001/get_trnd2_image?path=" +
                                          _list[index].profile_photo2.toString(),),
                                  ),
                                ),
@@ -281,7 +281,7 @@ class _accountState extends State<favorite> {
                                      image: DecorationImage(
 
                                        image: NetworkImage(
-                                         "http://192.168.100.42:2000/get_trnd2_image?path=" +
+                                         "http://192.168.100.42:2001/get_trnd2_image?path=" +
                                              _list[index].imageing.toString(),),
                                      ),
                                    ),
@@ -311,7 +311,7 @@ class _accountState extends State<favorite> {
                                  image: DecorationImage(
                                    fit: BoxFit.cover,
                                    image: NetworkImage(
-                                     "http://192.168.100.42:2000/get_trnd2_image?path=" +
+                                     "http://192.168.100.42:2001/get_trnd2_image?path=" +
                                          _list[index].profile_photo.toString(),),
                                  ),
                                ),
