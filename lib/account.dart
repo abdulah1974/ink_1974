@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart' as http3;
@@ -20,13 +21,21 @@ import 'package:shimmer/shimmer.dart';
 
 import 'number of followrs.dart';
 class account extends StatefulWidget {
-  const account({Key? key}) : super(key: key);
+  late  int id;
+  account(int ids){
+    id=ids;
+  }
 
   @override
-  _accountState createState() => _accountState();
+  _accountState createState() => _accountState(id);
 }
 
 class _accountState extends State<account> {
+
+  late  int id;
+  _accountState(int ids){
+    id=ids;
+  }
   List numbers = [1.4];
 
   late File _image = new File('your initial file');
@@ -70,7 +79,7 @@ class _accountState extends State<account> {
   void pio() async {
     var response = await http3
         .get(Uri.parse(
-        "http://192.168.100.42:2000/getpio?id=2"),);
+        "http://192.168.100.42:2000/getpio?id="+id.toString()),);
 
     var json = jsonDecode(response.body);
 
@@ -85,7 +94,7 @@ class _accountState extends State<account> {
   void follower() async {
     var response = await http3
         .get(Uri.parse(
-        "http://192.168.100.42:2000/getfollower?fan_id=2"),);
+        "http://192.168.100.42:2000/getfollower?fan_id="+id.toString()),);
 
     var json = jsonDecode(response.body);
 
@@ -101,7 +110,7 @@ class _accountState extends State<account> {
   void   Following() async {
     var response = await http3
         .get(Uri.parse(
-        "http://192.168.100.42:2000/getfollowing?account_id=2"),);
+        "http://192.168.100.42:2000/getfollowing?account_id="+id.toString()),);
 
     var json = jsonDecode(response.body);
 
@@ -157,7 +166,7 @@ class _accountState extends State<account> {
 
   void aa() async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:2000/my_user_Post?id=2"));
+        .get(Uri.parse("http://192.168.100.42:2000/my_user_Post?id="+id.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
@@ -166,6 +175,7 @@ class _accountState extends State<account> {
     });
 
   }
+
   List _list=[];
   Future<bool> aa2()async{
     for(var i=_list.length;i<pip.length+20;i++)
@@ -184,6 +194,20 @@ class _accountState extends State<account> {
 
 
 
+  List delets = [];
+  void deletpost(index) async {
+    var response = await http3
+        .get(Uri.parse(
+        "http://192.168.100.42:2000/delete?post_id=$index&email=abdullah@gmail.com&password=abd"),);
+
+    var json = jsonDecode(response.body);
+
+
+    setState(() {
+      delets = json;
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -191,24 +215,25 @@ class _accountState extends State<account> {
         backgroundColor: Color.fromRGBO(1, 4, 30, 1),
         appBar: AppBar(
           backgroundColor: Color.fromRGBO(1, 4, 30, 1),
-          title: Text("abdullah"),
+          title: Text("abd"),
           actions: [
             Padding(
                 padding: EdgeInsets.all(8.0),
                 child: IconButton(
+                  highlightColor:Color.fromRGBO(1, 4, 30, 1),
                   icon: Icon(Icons.add_circle_outlined),
                   onPressed: () {
                     print("hi");
-
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => edit_profile()),
+                      MaterialPageRoute(builder: (context) => edit_profile(id)),
                     );
                   },
                 )),
           ],
         ),
         body: CustomScrollView(
+
           physics:BouncingScrollPhysics(),
           slivers: <Widget>[
 
@@ -218,7 +243,9 @@ class _accountState extends State<account> {
               expandedHeight: 200,
               flexibleSpace: FlexibleSpaceBar(
               background: ListView.builder(
+
                   physics: BouncingScrollPhysics(),
+
                 itemCount: pip.length,
                   itemBuilder: (_,index)
                   {
@@ -230,7 +257,8 @@ class _accountState extends State<account> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                              fit: BoxFit.fill,
+                              fit: BoxFit.cover,
+
                               image: NetworkImage(
                                 "http://192.168.100.42:2000/get_trnd2_image?path=" +
                                     pip[index]["profile_photo"],),
@@ -244,29 +272,57 @@ class _accountState extends State<account> {
                         ),
                         SizedBox(height: 10,),
 
-                        Row(
-                          children: [
-                            SizedBox(width: 20,),
 
-                            Text(pip.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),),
-                            SizedBox(width: 98,),
-                            Text(follow.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),),
-                            SizedBox(width: 92,),
-                            Text(Following2.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),),
-                          ],
-                        ),
+                   /*
+                      Container(
+
+                        child: Text(pip.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),),
+                        width: 25,
+                        margin: const EdgeInsets.only(right: 1),
+
+                      ),
+
+                    */
+
+
+
+                            Row(
+
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+
+                                 Text(pip.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20,), textAlign: TextAlign.center,),
+
+                                ///Text(pip.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),),
+
+                                Text(follow.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),textAlign: TextAlign.center),
+
+                                Text(Following2.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),textAlign: TextAlign.center),
+
+                              ],
+                            ),
+
+
+
+
+
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            SizedBox(width: 10,),
-                            Text("Posts",style: TextStyle(color: Colors.white,fontSize: 14),),
-                            SizedBox(width: 86,),
+
+                           SizedBox(
+                             child:Text("   Posts",style: TextStyle(color: Colors.white,fontSize: 14)),
+
+                           ),
+
+                          ///  SizedBox(width: 86,),
                             InkWell(
                               child:Text("Followers",style: TextStyle(color: Colors.white,fontSize: 14),),
                               onTap: (){
                                 Navigator.push(context,MaterialPageRoute(builder: (context) =>number()));
                               },
                             ),
-                            SizedBox(width: 74,),
+                          ///  SizedBox(width: 74,),
                             InkWell(
                               child:Text("Following",style: TextStyle(color: Colors.white,fontSize: 14),),
                               onTap: (){
@@ -337,8 +393,9 @@ class _accountState extends State<account> {
                                       width: 30,
 
                                       child:IconButton(
+                                        highlightColor:Color.fromRGBO(1, 4, 30, 1),
                                         onPressed: () {
-                                          button();
+                                          button( _loadedPhotos[index]["post_id"]);
                                         },
                                         icon: Icon(Icons.more_vert),
                                         iconSize: 23,
@@ -395,6 +452,8 @@ class _accountState extends State<account> {
                                       width: 15,
                                     ),
                                     IconButton(
+
+                                      highlightColor:Color.fromRGBO(1, 4, 30, 1),
                                       onPressed: () {
                                         Navigator.push(
                                           context,
@@ -459,30 +518,33 @@ class _accountState extends State<account> {
                                       TextStyle(color: Colors.white, fontSize: 15),
                                     ),
                                     SizedBox(
-                                      width: 220,
+                                      width: 200,
 
                                     ),
                                     Flexible(
                                       child: IconButton(
+                                        highlightColor:Color.fromRGBO(1, 4, 30, 1),
                                         onPressed: () {
-                                          button();
+                                          button( _loadedPhotos[index]["post_id"]);
                                         },
                                         icon: Icon(Icons.more_vert),
                                         iconSize: 23,
                                         color: Colors.white,
                                       ),
-                                    )
+                                    ),
 
                                   ],
                                 ),
                                 SizedBox(
                                   height: 10,
                                 ),
+
                                 Text(_loadedPhotos[index]['title']==null?_loadedPhotos[index]['title'].toString():_loadedPhotos[index]['title'],
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 15,
                                     )),
+
                                 Row(
                                   children: [
                                     LikeButton(
@@ -522,6 +584,7 @@ class _accountState extends State<account> {
                                       width: 15,
                                     ),
                                     IconButton(
+                                      highlightColor:Color.fromRGBO(1, 4, 30, 1),
                                       onPressed: () {
                                         Navigator.push(
                                           context,
@@ -536,6 +599,8 @@ class _accountState extends State<account> {
                                       ),
                                       color: Colors.white,
                                     ),
+
+
                                   ],
                                 ),
                               ],
@@ -559,7 +624,7 @@ class _accountState extends State<account> {
         ),
     );
   }
-  void button() {
+  void button(index) {
     showModalBottomSheet<String>(
       backgroundColor: Colors.transparent,
       context: context,
@@ -588,6 +653,7 @@ class _accountState extends State<account> {
                     ),
                     onTap: (){
                       Navigator.pop(context);
+                      deletpost(index);
                     },
                   ),
 

@@ -14,16 +14,23 @@ import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:shake_animation_widget/shake_animation_widget.dart';
 
 class home extends StatefulWidget {
+  late  int id;
+   home(int ids){
+     id=ids;
+   }
 
-  const home( {Key? key}) : super(key: key);
 
 
 
   @override
-  _homeState createState() => _homeState();
+  _homeState createState() => _homeState(id);
 }
 
 class _homeState extends State<home> {
+  late  int id;
+  _homeState(int ids){
+    id=ids;
+  }
 
   late File _image = new File('your initial file');
   String name = "abdullah";
@@ -35,7 +42,7 @@ class _homeState extends State<home> {
 
   void aa() async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:3080/homepage3?user_id=2"));
+        .get(Uri.parse("http://192.168.100.42:2000/homepage3?user_id=2"));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
@@ -65,7 +72,7 @@ class _homeState extends State<home> {
 
   void getlike6() async {
     var response = await http2
-        .get(Uri.parse("http://192.168.100.42:3020/homepage3?user_id=2"),);
+        .get(Uri.parse("http://192.168.100.42:2000/homepage3?user_id=2"),);
 
     var json = jsonDecode(response.body);
 
@@ -100,7 +107,7 @@ class _homeState extends State<home> {
 
   void getfollowing() async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:3030/allfollow?fan_id=2"));
+        .get(Uri.parse("http://192.168.100.42:2000/allfollow?fan_id=2"));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
@@ -122,17 +129,19 @@ class _homeState extends State<home> {
   @override
   void initState() {
     getlike6();
-   aliiuser(2);
+    aliiuser(id);
     aa();
     getfollowing();
     controller = PageController(viewportFraction: 0.9);
+
+    print("hi"+id.toString());
     super.initState();
   }
 
   List allusers = [];
   void aliiuser(int fan_id) async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:3080/alluser?fan_id="+fan_id.toString()));
+        .get(Uri.parse("http://192.168.100.42:2000/alluser?fan_id="+fan_id.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
@@ -151,7 +160,7 @@ class _homeState extends State<home> {
   List following = [];
   void follow(var i) async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:3080/follow?email=abdullah@gmail.com&password=abd&account_id="+i.toString()));
+        .get(Uri.parse("http://192.168.100.42:2000/follow?email=abdullah@gmail.com&password=abd&account_id="+i.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
@@ -242,6 +251,7 @@ class _homeState extends State<home> {
                                width: 30,
 
                                child:IconButton(
+                                 highlightColor:Color.fromRGBO(1, 4, 30, 1),
                                  onPressed: () {
                                    button();
                                  },
@@ -258,11 +268,11 @@ class _homeState extends State<home> {
                           height: 10,
                         ),
                         Image.network(
-                          "http://192.168.100.42:3020/get_trnd2_image?path="!=
+                          "http://192.168.100.42:2000/get_trnd2_image?path="!=
                               null
                               ? "http://192.168.100.42:3020/get_trnd2_image?path="+
                               _loadedPhotos[index]["image"].toString()
-                              : "http://192.168.100.42:3020/get_trnd2_image?path=",
+                              : "http://192.168.100.42:2000/get_trnd2_image?path=",
                           fit: BoxFit.cover,
                           height: 350,
                           width: MediaQuery.of(context).size.width,
@@ -296,6 +306,7 @@ class _homeState extends State<home> {
                               width: 15,
                             ),
                             IconButton(
+                              highlightColor:Color.fromRGBO(1, 4, 30, 1),
                               onPressed: () {
                                 Navigator.push(
                                   context,
@@ -345,7 +356,7 @@ class _homeState extends State<home> {
 
                               fit: BoxFit.fill,
                               image: NetworkImage(
-                                "http://192.168.100.42:3020/get_trnd2_image?path=" +
+                                "http://192.168.100.42:2000/get_trnd2_image?path=" +
                                     _loadedPhotos[index]["profile_photo"],),
                             ),
 
@@ -377,6 +388,7 @@ class _homeState extends State<home> {
                           width: 30,
 
                           child:IconButton(
+                            highlightColor:Color.fromRGBO(1, 4, 30, 1),
                             onPressed: () {
                               button();
                             },
@@ -436,6 +448,7 @@ class _homeState extends State<home> {
                           width: 15,
                         ),
                         IconButton(
+                          highlightColor:Color.fromRGBO(1, 4, 30, 1),
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -548,7 +561,7 @@ class _homeState extends State<home> {
 
                            fit: BoxFit.cover,
                            image: NetworkImage(
-                             "http://192.168.100.42:3020/get_trnd2_image?path=" +
+                             "http://192.168.100.42:2000/get_trnd2_image?path=" +
                                  allusers[index]["profile_photo"],),
 
                        ),

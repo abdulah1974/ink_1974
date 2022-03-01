@@ -8,24 +8,56 @@ import 'account.dart';
 import 'add_post.dart';
 import 'favorite.dart';
 class Button extends StatefulWidget {
-  const Button({Key? key}) : super(key: key);
+  late int id;
+
+  Button(int id2){
+    id=id2;
+  }
 
   @override
-  _ButtonState createState() => _ButtonState();
+  _ButtonState createState() => _ButtonState(id);
 }
 
 class _ButtonState extends State<Button> {
+
+  late int id;
+
+  _ButtonState(int id2){
+    id=id2;
+  }
+
+
+
+
+
+
+
+  void cc()
+  {
+    print("myid"+id.toString());
+  }
+
+
   int _currentIndex=0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
+  List<Widget> _widgetOptions1 = <Widget>[];
 
-    home(),
-    search(),
-    add_post(),
-    favorite(),
-    account(),
-  ];
+
   late bool sel=true;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    cc();
+    _widgetOptions1=_widgetOptions1 = <Widget>[
+
+      home(id),
+      search(),
+      add_post(),
+      favorite(id),
+      account(id),
+    ];
+  }
 
 
   @override
@@ -33,7 +65,7 @@ class _ButtonState extends State<Button> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(1, 4, 30, 1),
       body: Center(
-        child: _widgetOptions.elementAt(_currentIndex),
+        child: _widgetOptions1.elementAt(_currentIndex),
       ),
       bottomNavigationBar: _buildNotificationBadge(),
     );
@@ -42,19 +74,23 @@ class _ButtonState extends State<Button> {
   Widget _buildNotificationBadge() {
 
     return CustomNavigationBar(
+
       iconSize: 30.0,
       selectedColor:Colors.white,
       strokeColor: Color(0x30040307),
       unSelectedColor: Colors.white70,
+
       backgroundColor: Color.fromRGBO(1, 4, 30, 1),
       items: [
         CustomNavigationBarItem(
+
           icon: Icon(Icons.home,size: 32),
           //  badgeCount: _badgeCounts[0],
           //   showBadge: _badgeShows[0],
         ),
 
         CustomNavigationBarItem(
+
           icon:Icon(Icons.search,size: 30),
           //     badgeCount: _badgeCounts[2],
           //       showBadge: _badgeShows[2],

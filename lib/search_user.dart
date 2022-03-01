@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flappy_search_bar/scaled_tile.dart';
 import 'package:http/http.dart' as http3;
 import 'package:ink/Button.dart';
+import 'package:ink/models/model.dart';
 
 import 'model_search.dart';
 class search_user extends StatefulWidget {
@@ -30,8 +31,9 @@ class _search_userState extends State<search_user> {
 
   }
 
+
   void search() async {
-    var response = await http3.get(Uri.parse("http://192.168.100.42:2001/serch?username="+tc.text),);
+    var response = await http3.get(Uri.parse("http://192.168.100.42:2000/serch?username="+tc.text),);
 
     var json = jsonDecode(response.body);
 
@@ -106,7 +108,7 @@ class _search_userState extends State<search_user> {
                             shape: BoxShape.circle,
                             image: DecorationImage(
                               fit: BoxFit.fill,
-                              image: NetworkImage("http://192.168.100.42:2001/get_trnd2_image?path="+results[ind]["profile_photo"]),
+                              image: NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+results[ind]["profile_photo"]),
                             ),
                           ),
                         ),
