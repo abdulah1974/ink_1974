@@ -6,40 +6,52 @@ import 'package:flappy_search_bar/scaled_tile.dart';
 import 'package:http/http.dart' as http3;
 import 'package:ink/Button.dart';
 import 'package:ink/models/model.dart';
+import 'package:ink/user.dart';
 
 import 'model_search.dart';
 class search_user extends StatefulWidget {
-  const search_user({Key? key}) : super(key: key);
+  late int id;
+
+  search_user(int id2){
+    id=id2;
+  }
 
   @override
-  _search_userState createState() => _search_userState();
+  _search_userState createState() => _search_userState(id);
 }
 
 class _search_userState extends State<search_user> {
+  late int id;
+
+  _search_userState(int id2)
+  {
+    id=id2;
+  }
+
 
   List results = [];
 
   List rows = [];
-  String query = '';
+ late String query = "";
   late TextEditingController tc;
 
   @override
   void initState() {
     super.initState();
     tc = TextEditingController();
-
+   print("_search:"+id.toString());
 
   }
 
 
   void search() async {
-    var response = await http3.get(Uri.parse("http://192.168.100.42:2000/serch?username="+tc.text),);
+    var response = await http3.get(Uri.parse("http://192.168.100.42:2000/serch2?username="+tc.text+"&id="+id.toString()),);
 
     var json = jsonDecode(response.body);
 
     setState(() {
       rows = json;
-
+      //  print(results[0]['id']);
     });
   }
 
@@ -70,11 +82,9 @@ class _search_userState extends State<search_user> {
 
               controller: tc,
               onChanged: (v) {
-                setState(() {
-                  query = v;
-                  setResults(query);
-                  search();
-                });
+                query = v;
+                setResults(query);
+                search();
               },
             ),
           ),
@@ -100,7 +110,7 @@ class _search_userState extends State<search_user> {
                     shrinkWrap: true,
                     itemCount: results.length,
                     itemBuilder: (con, ind) {
-                      return ListTile(
+                      return   ListTile(
                         leading:Container(
                           width: 38,
                           height: 38,
@@ -115,13 +125,21 @@ class _search_userState extends State<search_user> {
                         title: Text(results[ind]['username'],style: TextStyle(color: Colors.white),),
                         onTap: () {
                           setState(() {
-                            tc.text = results[ind]['username'];
+                           // tc.text = results[ind]['username'];
                             query = results[ind]['username'];
                             setResults(query);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => user(results[ind]["id"],id)),
+                            );
                           });
                         },
 
                       );
+
+
+
                     },
                   ),
                 ),

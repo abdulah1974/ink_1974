@@ -52,7 +52,7 @@ class _ButtonState extends State<Button> {
     _widgetOptions1=_widgetOptions1 = <Widget>[
 
       home(id),
-      search(),
+      search(id),
       add_post(),
       favorite(id),
       account(id),

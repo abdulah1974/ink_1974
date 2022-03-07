@@ -28,7 +28,7 @@ class _commentState extends State<comment> {
   void comment1() async {
 
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:3020/comment?id="+id.toString()+"&comment="+nameController.text));
+        .get(Uri.parse("http://192.168.100.42:2000/comment?id="+id.toString()+"&comment="+nameController.text));
     var jsondata = jsonDecode(response.body);
 
 
@@ -51,7 +51,7 @@ class _commentState extends State<comment> {
 
   void aa() async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:3020/getcomment?post_id="+id.toString()));
+        .get(Uri.parse("http://192.168.100.42:2000/getcomment?post_id="+id.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
@@ -63,7 +63,7 @@ class _commentState extends State<comment> {
     // TODO: implement initState
     super.initState();
     aa();
-
+    print(id);
   }
 
   @override
@@ -110,7 +110,7 @@ class _commentState extends State<comment> {
                       addItemToList();
                       nameController.clear();
                     },
-                    child: Icon(Icons.send,color: Colors.black,size: 23,),
+                    child: Icon(Icons.send_outlined,color: Colors.black,size: 25),
                     backgroundColor: Colors.white,
                     elevation: 0,
                   ),
@@ -145,19 +145,22 @@ class _commentState extends State<comment> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                        fit: BoxFit.fill,
-                        image: NetworkImage("http://192.168.100.42:3020/get_trnd2_image?path="+_loadedPhotos[index]["profile_photo"]),
+                        fit: BoxFit.cover,
+                        image: NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+_loadedPhotos[index]["profile_photo"]),
                       ),
                     ),
                   ),
                   SizedBox(
                     width: 10,
                   ),
-                  Text(
-                    _loadedPhotos[index]["username"],
-                    style:
-                    TextStyle(color: Colors.white, fontSize: 15),
+                  Expanded(
+                    child: Text(
+                      _loadedPhotos[index]["username"],
+                      style:
+                      TextStyle(color: Colors.white, fontSize: 13),
+                    ),
                   ),
+
                   SizedBox(
                     width: 184,
                   ),
@@ -167,10 +170,10 @@ class _commentState extends State<comment> {
               SizedBox(
                 height: 10,
               ),
-              Text(
-                  _loadedPhotos[index]["comment"],
-                  style: TextStyle(color: Colors.white, fontSize: 15,)
-              ),
+                Text(
+                _loadedPhotos[index]["comment"],
+                style: TextStyle(color: Colors.white, fontSize: 13,),
+               ),
 
             ],
           );

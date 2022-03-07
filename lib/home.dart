@@ -371,7 +371,7 @@ class _homeState extends State<home> {
                               onTap: (){
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => user(_loadedPhotos[index]["id"],_loadedPhotos[index]["user_id"])),
+                                  MaterialPageRoute(builder: (context) => user(_loadedPhotos[index]["user_id"],id)),
                                 );
                               },
                               child:Text(
@@ -494,7 +494,7 @@ class _homeState extends State<home> {
                     child:ClipRRect(
                     borderRadius: BorderRadius.circular(30.0),
                 child: Container(
-                  color: Colors.black26,
+                  color:  Color.fromRGBO(15, 3, 50, 1.0),
                   width: 270,
                   height: 270,
                 ),

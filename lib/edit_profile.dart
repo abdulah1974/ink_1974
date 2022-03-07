@@ -181,7 +181,7 @@ class _edit_profileState extends State<edit_profile> {
 
                 if(bio.text=="")
                   {
-
+                    print("den");
                   }else{
                   edit_pio();
                   }
@@ -204,7 +204,7 @@ class _edit_profileState extends State<edit_profile> {
 
            ],
          ),
-
+         for(var i=0;i<pip.length;i++)
           InkWell(
             child: Container(
               width: 110,
@@ -221,7 +221,7 @@ class _edit_profileState extends State<edit_profile> {
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path=" +
-                          pip[0]["profile_photo"],),
+                          pip[i]["profile_photo"],),
 
                     ),
                   ),

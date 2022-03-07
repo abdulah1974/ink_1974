@@ -48,6 +48,10 @@ class _accountState extends State<favorite> {
 
     setState(() {
       follow = json;
+      for(var i=_list.length;i<follow.length;i++)
+      {
+        _list.add(new modeiling(username:follow[i]["username"],profile_photo:follow[i]["profile_photo"],IsLike:follow[i]["like"],id:follow[i]["id"]));
+      }
 
     });
   }
@@ -61,7 +65,10 @@ class _accountState extends State<favorite> {
     var json = jsonDecode(response.body);
     setState(() {
       like = json;
-
+      for(var i=_list.length;i<like.length;i++)
+      {
+        _list.add(new modeiling(username2:like[i]["username"],profile_photo2:like[i]["profile_photo"], IsLike: false,imageing:like[i]["image"],title:like[i]["title"] ));
+      }
       print("kk");
     });
 
@@ -78,7 +85,7 @@ class _accountState extends State<favorite> {
   Future<bool> data1()async{
     for(var i=_list.length;i<like.length+20;i++)
     {
-      Future.delayed(Duration(seconds: i+1),(){
+      Future.delayed(Duration(seconds: 1),(){
         setState(() {
      ///   _list.add(new model(name: '', id: '', us: '', user:follow[i]["username"] , img: follow[i]["profile_photo"]));
         _list.add(new modeiling(username2:like[i]["username"],profile_photo2:like[i]["profile_photo"], IsLike: false,imageing:like[i]["image"],title:like[i]["title"] ));
@@ -87,19 +94,7 @@ class _accountState extends State<favorite> {
     }
     return true;
   }
-  Future<bool> data2()async{
-    for(var i=_list.length;i<follow.length+20;i++)
-    {
-      Future.delayed(Duration(seconds: i+1),(){
-        setState(() {
-      _list.add(new modeiling(username:follow[i]["username"],profile_photo:follow[i]["profile_photo"],IsLike:follow[i]["like"],id:follow[i]["id"]));
 
-           print(follow[i]["IsLike"]);
-        });
-      });
-    }
-    return true;
-  }
 
 
 
@@ -110,9 +105,9 @@ class _accountState extends State<favorite> {
 
     super.initState();
    getlike();
-      data1();
+    //  data1();
     follower();
-    data2();
+  //  data2();
   //  data1();
 
 

@@ -14,13 +14,22 @@ import 'package:bouncing_widget/bouncing_widget.dart';
 import 'package:shake_animation_widget/shake_animation_widget.dart';
 import 'package:shimmer/shimmer.dart';
 class search extends StatefulWidget {
-  const search({Key? key}) : super(key: key);
+  late int id;
+
+  search(int id2){
+    id=id2;
+  }
 
   @override
-  _accountState createState() => _accountState();
+  _accountState createState() => _accountState(id);
 }
 
 class _accountState extends State<search> {
+  late int id;
+
+  _accountState(int id2){
+    id=id2;
+  }
 
  // "https://www.instagram.com/static/images/ico/favicon-192.png/68d99ba29cc8.png"
   late File _image = new File('your initial file');
@@ -131,7 +140,7 @@ class _accountState extends State<search> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => search_user()),
+                      builder: (context) => search_user(id)),
                 );
 
               },)

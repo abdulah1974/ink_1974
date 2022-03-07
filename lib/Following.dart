@@ -16,7 +16,7 @@ class _numberState extends State<following> {
   void follower() async {
     var response = await http3
         .get(Uri.parse(
-        "http://192.168.100.42:3020/getfollowing?account_id=2"),);
+        "http://192.168.100.42:2000/getfollowing?account_id=2"),);
 
     var json = jsonDecode(response.body);
 
@@ -45,7 +45,7 @@ class _numberState extends State<following> {
   }
   Widget Following()
   {
-    return  ListView.builder(
+    return  follow.length>0?ListView.builder(
 
         itemCount: follow.length,
         physics: BouncingScrollPhysics(),
@@ -69,7 +69,7 @@ class _numberState extends State<following> {
                       image: DecorationImage(
                         fit: BoxFit.fill,
                         image: NetworkImage(
-                          "http://192.168.100.42:3020/get_trnd2_image?path=" +
+                          "http://192.168.100.42:2000/get_trnd2_image?path=" +
                               follow[index]["profile_photo"],),
                       ),
                     ),
@@ -94,6 +94,6 @@ class _numberState extends State<following> {
               Divider(height: 15),
             ],
           );
-        });
+        }):Center(child: Text("Following",style: TextStyle(color: Colors.white,fontSize: 25),),);
   }
 }

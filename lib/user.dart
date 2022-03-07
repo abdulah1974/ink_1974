@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ink/user_model.dart';
 import 'package:like_button/like_button.dart';
 import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'comment.dart';
@@ -9,25 +10,25 @@ import 'package:http/http.dart' as http3;
 import 'package:http/http.dart' as http;
 import 'package:like_button/like_button.dart';
 class user extends StatefulWidget {
-  late int name;
-  late int user_id;
+  late int id;
+  late int myid;
 
   user(int n,int x) {
-    name = n;
-    user_id=x;
+    id = n;
+    myid=x;
   }
 
   @override
-  _userState createState() => _userState(name,user_id);
+  _userState createState() => _userState(id,myid);
 }
 
 class _userState extends State<user> {
-  late int name;
-  late int user_id;
+  late int id;
+  late int myid;
 
   _userState(int n,int x) {
-    name = n;
-    user_id=x;
+    id = n;
+    myid=x;
   }
 
 
@@ -39,7 +40,7 @@ class _userState extends State<user> {
   void pio() async {
     var response = await http3
         .get(Uri.parse(
-        "http://192.168.100.42:3080/userbio?id="+name.toString()),);
+        "http://192.168.100.42:2000/getpio?id="+id.toString()),);
 
     var json = jsonDecode(response.body);
 
@@ -56,35 +57,41 @@ class _userState extends State<user> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(user_id);
+    print("mmmmmmm:"+myid.toString());
     pio();
 
      aa();
-     getfollowing();
-  }
+    follower();
+    data();
+
+    userfollow_or_unfollow();
+}
   List _loadedPhotos = [];
-  Future<bool> onLikeButtonTapped(bool isLiked, index) async {
+  Future<bool> onLikeButtonTapped(bool isLiked,  var lik) async {
     {
       if (isLiked) {
 
 
         _rateCount -= 1;
-        like(index);
+        like(lik);
+        print(_loadedPhotos[lik]["post_id"]);
       } else {
-        like(likes);
+        like(lik);
         _rateCount += 1;
 
       }
       return !isLiked;
     }
   }
+
   void aa() async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:3080/user?id="+name.toString()));
+        .get(Uri.parse("http://192.168.100.42:2000/userid?id="+id.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
       _loadedPhotos = jsondata;
+      _loadedPhotos.length>0?print("no"):print("vv");
 
     });
 
@@ -93,8 +100,9 @@ class _userState extends State<user> {
   List following = [];
   List<int> selectedIndexList =[];
   void follow() async {
+
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:3080/follow?email=abdullah@gmail.com&password=abd&account_id="+user_id.toString()));
+        .get(Uri.parse("http://192.168.100.42:2000/follow?email=abdullah@gmail.com&password=abd&account_id="+id.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
@@ -105,20 +113,26 @@ class _userState extends State<user> {
 
   }
 
-  List getfollowing2 = [];
 
-  void getfollowing() async {
-    var response = await http
-        .get(Uri.parse("http://192.168.100.42:3080/usefollow?fan_id="+user_id.toString()));
-    var jsondata = jsonDecode(response.body);
+
+
+
+  List follows = [];
+///يجيب اليوزر نيم
+  void follower() async {
+    var response = await http3
+        .get(Uri.parse(
+        "http://192.168.100.42:2000/getfollowing6666?account_id="+myid.toString()),);
+
+    var json = jsonDecode(response.body);
+
 
     setState(() {
-      getfollowing2 = jsondata;
-
+      follows = json;
 
     });
-
   }
+
   List likes=[];
   void like(index) async {
     var response = await http3
@@ -132,6 +146,35 @@ class _userState extends State<user> {
       likes = json;
     });
   }
+ List<use_model> _list=[];
+  Future<bool> data()async{
+    for(var i=_list.length;i<follow_unfollow.length+20;i++)
+    {
+      Future.delayed(Duration(seconds: i+1),(){
+        setState(() {
+
+          _list.add(new use_model(foloowing:follow_unfollow[i]["like"]));
+        });
+      });
+    }
+    return true;
+  }
+  var follow_unfollow=[];
+  void userfollow_or_unfollow() async {
+    var response = await http3
+        .get(Uri.parse(
+        "http://192.168.100.42:2000/userfollow_or_unfollow?fan_id=$myid&account_id="+id.toString()),);
+
+    var json = jsonDecode(response.body);
+
+
+    setState(() {
+      follow_unfollow = json;
+      print(follow_unfollow);
+
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -141,70 +184,74 @@ class _userState extends State<user> {
         physics: BouncingScrollPhysics(),
 
         slivers: <Widget>[
+       for(var i=0;i<pip.length;i++)
+         SliverAppBar(
+        floating: true,
+        title:Text(pip[i]["username"] !=null ? pip[i]["username"] : "" ,style: TextStyle(color: Colors.white,fontSize: 25,)),
+        backgroundColor: Color.fromRGBO(1, 4, 30, 1),
+        expandedHeight: 280,
+        flexibleSpace: FlexibleSpaceBar(
 
-          SliverAppBar(
+          background:  Column(
+            children: [
+              SizedBox(height: 30,),
 
-            floating: true,
-            title:Text(pip[0]["username"],style: TextStyle(color: Colors.white,fontSize: 25,)),
-            backgroundColor: Color.fromRGBO(1, 4, 30, 1),
-            expandedHeight: 280,
-            flexibleSpace: FlexibleSpaceBar(
-
-                background:  Column(
-                  children: [
-                    SizedBox(height: 30,),
-
-                    SizedBox(height:50),
-                    Container(
-                      width: 110,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(
-                            "http://192.168.100.42:3020/get_trnd2_image?path=" +
-                                pip[0]["profile_photo"],),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10,),
-                    Container(
-                      width: 220,
-                      child: Text(pip[0]["bio"],style: TextStyle(color: Colors.white,fontSize: 14),),
-                    ),
-                    SizedBox(height: 20,),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          foolow[0]=!foolow[0];
-                         follow();
-                        });
-                      },
-                      style: ButtonStyle(
-                          side: MaterialStateProperty.all(
-                              const BorderSide(
-                                  width: 2, color: Colors.white)),
-
-                          foregroundColor:MaterialStateProperty.all(foolow[0]!=getfollowing2[0]["IsLike"]?Colors.white:Colors.red),
-                          padding: MaterialStateProperty.all(
-                              const EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 20)),
-                          textStyle: MaterialStateProperty.all(
-                              const TextStyle(fontSize: 25))),
-                      child: Text(foolow[0]!=getfollowing2[0]["IsLike"]?"Follow":"Following"),
-                    ),
-                  ],
+              SizedBox(height:50),
+              Container(
+                width: 110,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(
+                      "http://192.168.100.42:2000/get_trnd2_image?path=" +
+                          pip[i]["profile_photo"],),
+                  ),
                 ),
-            ),
+              ),
+              SizedBox(height: 10,),
+              Visibility(
+                 visible: pip[i]["bio"] == null ? false : true,
+                  child: Center(
+
+                    child: Text(pip[i]["bio"] !=null ? pip[i]["bio"] : "" ,style: TextStyle(color: Colors.white,fontSize: 14),),
+                  ),
+              ),
+              SizedBox(height: 20,),
+              for(var c=0;c<follow_unfollow.length;c++)
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    foolow[0]=!foolow[0];
+                    follow();
+                  });
+                },
+                style: ButtonStyle(
+                    side: MaterialStateProperty.all(foolow[0]!=follow_unfollow[c]["like"]?BorderSide(
+                        width: 2, color:Colors.white):BorderSide(
+                        width: 2, color:Colors.blue)),
+
+                    foregroundColor:MaterialStateProperty.all(foolow[0]!=follow_unfollow[c]["like"]?Colors.white:Colors.blue),
+                    padding: MaterialStateProperty.all(
+                        const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 10)),
+                    textStyle: MaterialStateProperty.all(
+                        const TextStyle(fontSize: 20))),
+                child: Text(foolow[0]!=follow_unfollow[c]["like"]?"Follow":"Following"),
+              ),
+            ],
           ),
+        ),
+      ),
           //3
+
           SliverList(
 
             delegate: SliverChildBuilderDelegate(
 
                   (_, int index) {
-                return ListTile(
+                return _loadedPhotos[index]["post"]!=0?ListTile(
 
                   title: Column(
 
@@ -229,7 +276,7 @@ class _userState extends State<user> {
                                         fit: BoxFit.cover,
                                         image: NetworkImage(
                                           "http://192.168.100.42:3020/get_trnd2_image?path=" +
-                                              pip[0]["profile_photo"],),
+                                              pip[index]["profile_photo"],),
                                       ),
 
                                     ),
@@ -240,7 +287,7 @@ class _userState extends State<user> {
                                     child: Container(
                                       padding: EdgeInsets.all(10),
                                       child: Text(
-                                        pip[0]["username"],
+                                        pip[index]["username"],
                                         style:
                                         TextStyle(color: Colors.white, fontSize: 15),
                                       ),
@@ -267,11 +314,11 @@ class _userState extends State<user> {
                                 height: 10,
                               ),
                               Image.network(
-                                "http://192.168.100.42:3020/get_trnd2_image?path="!=
+                                "http://192.168.100.42:2000/get_trnd2_image?path="!=
                                     null
                                     ? "http://192.168.100.42:3020/get_trnd2_image?path="+
                                     _loadedPhotos[index]["image"].toString()
-                                    : "http://192.168.100.42:3020/get_trnd2_image?path=",
+                                    : "http://192.168.100.42:2000/get_trnd2_image?path=",
                                 fit: BoxFit.cover,
                                 height: 350,
                                 width: MediaQuery.of(context).size.width,
@@ -298,13 +345,15 @@ class _userState extends State<user> {
                                         size: 30,
                                       );
                                     },
+
                                     size: 33,
-                                    likeCount:  _loadedPhotos[index]["likes"],
+                                    likeCount: _loadedPhotos[index]["likes"],
                                     onTap: (isLiked) {
                                       return onLikeButtonTapped(
-                                        isLiked, index,
+                                        isLiked, _loadedPhotos[index]["post_id"],
                                       );
                                     },
+
                                   ),
                                   SizedBox(
                                     width: 15,
@@ -360,8 +409,8 @@ class _userState extends State<user> {
 
                                         fit: BoxFit.cover,
                                         image: NetworkImage(
-                                          "http://192.168.100.42:3020/get_trnd2_image?path=" +
-                                              pip[0]["profile_photo"],),
+                                          "http://192.168.100.42:2000/get_trnd2_image?path=" +
+                                              pip[index]["profile_photo"],),
                                       ),
 
                                     ),
@@ -373,7 +422,7 @@ class _userState extends State<user> {
 
                                       padding: EdgeInsets.all(10),
                                       child: Text(
-                                        pip[0]["username"],
+                                        pip[index]["username"],
                                         style:
                                         TextStyle(color: Colors.white, fontSize: 15),
                                       ),
@@ -431,7 +480,7 @@ class _userState extends State<user> {
                                     likeCount: _loadedPhotos[index]["likes"],
                                     onTap: (isLiked) {
                                       return onLikeButtonTapped(
-                                        isLiked, _loadedPhotos[index]["id"],
+                                        isLiked, _loadedPhotos[index]["post_id"],
                                       );
                                     },
 
@@ -448,7 +497,7 @@ class _userState extends State<user> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                comment(_loadedPhotos[index]["id"])),
+                                                comment(_loadedPhotos[index]["post_id"])),
                                       );
                                     },
                                     icon: Icon(
@@ -471,6 +520,14 @@ class _userState extends State<user> {
 
                     ],
                   ),
+                ):Column(
+                  children: [
+                    SizedBox(height: 110,),
+                Center(
+
+                 child:Icon(Icons.image_not_supported_outlined,color: Colors.white,size: 170,),
+                    ),
+                  ],
                 );
               },
               childCount:_loadedPhotos.length,

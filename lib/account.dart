@@ -122,46 +122,37 @@ class _accountState extends State<account> {
   }
   List _loadedPhotos = [];
 
-  // The function that fetches data from the API
-  Future<void> _fetchData() async {
-    const API_URL = 'https://jsonplaceholder.typicode.com/photos';
 
-    HttpClient client = new HttpClient();
-    client.autoUncompress = true;
-
-    final HttpClientRequest request = await client.getUrl(Uri.parse(API_URL));
-    request.headers
-        .set(HttpHeaders.contentTypeHeader, "application/json; charset=UTF-8");
-    final HttpClientResponse response = await request.close();
-
-    final String content = await response.transform(utf8.decoder).join();
-    final List data = json.decode(content);
-
-    setState(() {
-      _loadedPhotos = data;
-      if(data.length>0)
-        {
-          setState(() {
-            showImageWidget=true;
-          });
-        }
-    });
-  }
   bool isLoading = false;
   late bool _hasMore;
   final Set _saved = new Set();
-  Future<bool> onLikeButtonTapped(bool isLiked, likes) async {
+  Future<bool> onLikeButtonTapped(bool isLiked,  var lik) async {
     {
       if (isLiked) {
-       // like(likes);
+
 
         _rateCount -= 1;
+      likes(lik);
+        print(_loadedPhotos[lik]["post_id"]);
       } else {
-       // like(likes);
+        likes(lik);
         _rateCount += 1;
+
       }
       return !isLiked;
     }
+  }
+  List like=[];
+  void likes(var index) async {
+    var response = await http.get(Uri.parse("http://192.168.100.42:2000/like?post_id="+index.toString()+"&email=abdullah@gmail.com&password=abd"));
+
+    var jsondata = jsonDecode(response.body);
+
+    setState(() {
+      like = jsondata;
+      print("hhh");
+    });
+
   }
 
   void aa() async {
@@ -206,17 +197,27 @@ class _accountState extends State<account> {
     setState(() {
       delets = json;
 
+
     });
   }
+late  List name=[];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Color.fromRGBO(1, 4, 30, 1),
+
         appBar: AppBar(
           backgroundColor: Color.fromRGBO(1, 4, 30, 1),
-          title: Text("abd"),
+
+
           actions: [
+            for(var i=0;i<pip.length;i++)
+             Container(
+               width: 280,
+               child:Text(pip[i]["username"],style: TextStyle(fontSize: 24,height: 2),),
+             ),
+
             Padding(
                 padding: EdgeInsets.all(8.0),
                 child: IconButton(
@@ -240,7 +241,7 @@ class _accountState extends State<account> {
             SliverAppBar(
 
               backgroundColor: Color.fromRGBO(1, 4, 30, 1),
-              expandedHeight: 200,
+              expandedHeight: 210,
               flexibleSpace: FlexibleSpaceBar(
               background: ListView.builder(
 
@@ -291,7 +292,7 @@ class _accountState extends State<account> {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
 
-                                 Text(pip.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20,), textAlign: TextAlign.center,),
+                                 Text(_loadedPhotos[index]["post"].toString(),style: TextStyle(color: Colors.white,fontSize: 20,), textAlign: TextAlign.center,),
 
                                 ///Text(pip.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),),
 
@@ -345,13 +346,14 @@ class _accountState extends State<account> {
               delegate: SliverChildBuilderDelegate(
 
                     (_, int index) {
+                  ///    int rev=_loadedPhotos.length -1 -index;
                   return ListTile(
 
                     title: Column(
 
                       children: [
                         Visibility(
-                          visible: _loadedPhotos[index]["image"] == null ? false : true,
+                          visible: _loadedPhotos[_loadedPhotos.length - 1 -index]["image"] == null ? false : true,
                           child: Card(
                             semanticContainer: true,
                             clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -367,10 +369,10 @@ class _accountState extends State<account> {
                                         shape: BoxShape.circle,
                                         image: DecorationImage(
 
-                                          fit: BoxFit.fill,
+                                          fit: BoxFit.cover,
                                           image: NetworkImage(
                                             "http://192.168.100.42:2000/get_trnd2_image?path=" +
-                                                _loadedPhotos[index]["profile_photo"],),
+                                                _loadedPhotos[_loadedPhotos.length - 1 -index]["profile_photo"],),
                                         ),
 
                                       ),
@@ -381,7 +383,7 @@ class _accountState extends State<account> {
                                       child: Container(
                                         padding: EdgeInsets.all(10),
                                         child: Text(
-                                          _loadedPhotos[index]["account_name"],
+                                          _loadedPhotos[_loadedPhotos.length - 1 -index]["account_name"],
                                           style:
                                           TextStyle(color: Colors.white, fontSize: 15),
                                         ),
@@ -412,7 +414,7 @@ class _accountState extends State<account> {
                                   "http://192.168.100.42:2000/get_trnd2_image?path="!=
                                       null
                                       ? "http://192.168.100.42:2000/get_trnd2_image?path="+
-                                      _loadedPhotos[index]["image"].toString()
+                                      _loadedPhotos[_loadedPhotos.length - 1 -index]["image"].toString()
                                       : "http://192.168.100.42:2000/get_trnd2_image?path=",
                                   fit: BoxFit.cover,
                                   height: 350,
@@ -444,7 +446,7 @@ class _accountState extends State<account> {
                                       likeCount: _loadedPhotos[index]["likes"],
                                       onTap: (isLiked) {
                                         return onLikeButtonTapped(
-                                          isLiked, _loadedPhotos[index]["id"],
+                                          isLiked, _loadedPhotos[index]["post_id"],
                                         );
                                       }
                                     ),
@@ -459,7 +461,7 @@ class _accountState extends State<account> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  comment(_loadedPhotos[index]["id"])),
+                                                  comment(_loadedPhotos[index]["post_id"])),
                                         );
                                       },
                                       icon: Icon(
@@ -500,7 +502,7 @@ class _accountState extends State<account> {
                                         shape: BoxShape.circle,
                                         image: DecorationImage(
 
-                                          fit: BoxFit.fill,
+                                          fit: BoxFit.cover,
                                           image: NetworkImage(
                                             "http://192.168.100.42:2000/get_trnd2_image?path=" +
                                                 _loadedPhotos[index]["profile_photo"],),
@@ -590,7 +592,7 @@ class _accountState extends State<account> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  comment(_loadedPhotos[index]["id"])),
+                                                  comment(_loadedPhotos[index]["post_id"])),
                                         );
                                       },
                                       icon: Icon(
@@ -633,7 +635,7 @@ class _accountState extends State<account> {
         return Container(
           height: MediaQuery.of(context).size.height * 0.2,
           decoration: BoxDecoration(
-              color:  Color.fromRGBO(15, 16, 68, 1.0),
+              color:  Color.fromRGBO(15, 3, 50, 1.0),
               borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
           ),
 
