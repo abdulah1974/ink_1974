@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:ink/Button.dart';
+import 'package:ink/edit_profile.dart';
 import 'package:ink/modeling.dart';
 import 'package:ink/modeling2.dart';
 import 'package:ink/models/joke.dart';
 import 'package:ink/models/model.dart';
+import 'package:ink/user.dart';
 import 'package:like_button/like_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,18 +22,26 @@ import 'model_acont/bool.dart';
 
 class favorite extends StatefulWidget {
   late  int id;
-  favorite(int ids){
+  late String email;
+  late String pasw;
+  favorite(int ids, String emails, String passwords){
+    email=emails;
+    pasw=passwords;
     id=ids;
   }
 
 
   @override
-  _accountState createState() => _accountState(id);
+  _accountState createState() => _accountState(id,email,pasw);
 }
 
 class _accountState extends State<favorite> {
   late  int id;
-  _accountState(int ids){
+  late String email;
+  late String pasw;
+  _accountState(int ids,String emails, String passwords){
+    email=emails;
+    pasw=passwords;
     id=ids;
   }
 
@@ -50,7 +61,8 @@ class _accountState extends State<favorite> {
       follow = json;
       for(var i=_list.length;i<follow.length;i++)
       {
-        _list.add(new modeiling(username:follow[i]["username"],profile_photo:follow[i]["profile_photo"],IsLike:follow[i]["like"],id:follow[i]["id"]));
+        _list.add(new modeiling(username:follow[i]["username"],profile_photo:follow[i]["profile_photo"],IsLike:follow[i]["like"],id:follow[i]["id"],userid: follow[i]["user_id"]));
+        print(follow[i]["user_id"]);
       }
 
     });
@@ -67,7 +79,8 @@ class _accountState extends State<favorite> {
       like = json;
       for(var i=_list.length;i<like.length;i++)
       {
-        _list.add(new modeiling(username2:like[i]["username"],profile_photo2:like[i]["profile_photo"], IsLike: false,imageing:like[i]["image"],title:like[i]["title"] ));
+        _list.add(new modeiling(username2:like[i]["username"],profile_photo2:like[i]["profile_photo"], IsLike: false,imageing:like[i]["image"],title:like[i]["title"],userid: like[i]["user_id"]));
+        print(like[i]["user_id"]);
       }
       print("kk");
     });
@@ -88,7 +101,8 @@ class _accountState extends State<favorite> {
       Future.delayed(Duration(seconds: 1),(){
         setState(() {
      ///   _list.add(new model(name: '', id: '', us: '', user:follow[i]["username"] , img: follow[i]["profile_photo"]));
-        _list.add(new modeiling(username2:like[i]["username"],profile_photo2:like[i]["profile_photo"], IsLike: false,imageing:like[i]["image"],title:like[i]["title"] ));
+        _list.add(new modeiling(username2:like[i]["username"],profile_photo2:like[i]["profile_photo"], IsLike: false,imageing:like[i]["image"],title:like[i]["title"]));
+
         });
       });
     }
@@ -125,7 +139,7 @@ class _accountState extends State<favorite> {
   int? _destinationIndex;
   void following(var i) async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:2000/follow?email=abdullah@gmail.com&password=abd&account_id="+i.toString()));
+        .get(Uri.parse("http://192.168.100.42:2000/follow?email="+email+"&password="+pasw+"&account_id="+i.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
@@ -185,25 +199,38 @@ class _accountState extends State<favorite> {
                          child:Row(
                            children: [
                              SizedBox(width: 15,),
+                             GestureDetector(
+                               onTap: (){
+                                 /*
+                                 Navigator.push(
+                                   context,
+                                   MaterialPageRoute(
+                                       builder: (context) => user(2,id)),
+                                 );
 
-                             Container(
-                               width: 40,
-                               height: 40,
-                               decoration: BoxDecoration(
-                                 shape: BoxShape.circle,
-                                 image: DecorationImage(
-                                   fit: BoxFit.cover,
-                                   image: NetworkImage(
-                                     "http://192.168.100.42:2000/get_trnd2_image?path=" +
-                                         _list[index].profile_photo2.toString(),),
+                                  */
+                               },
+                               child:Container(
+                                 width: 40,
+                                 height: 40,
+                                 decoration: BoxDecoration(
+                                   shape: BoxShape.circle,
+                                   image: DecorationImage(
+                                     fit: BoxFit.cover,
+                                     image: NetworkImage(
+                                       "http://192.168.100.42:2000/get_trnd2_image?path=" +
+                                           _list[index].profile_photo2.toString(),),
+                                   ),
                                  ),
                                ),
                              ),
+
                              SizedBox(width: 13,),
 
                              Column(
                                children: [
-                                 ///  _list[i].id!=null?_list[i].id:""
+                                 //  _list[i].id!=null?_list[i].id:""
+
                                  SizedBox(width: 83,
                                    child: Text(
                                      _list[index].username2.toString(),
@@ -237,7 +264,7 @@ class _accountState extends State<favorite> {
 
 
                              SizedBox(width: 165,),
-                            InkWell(
+                             GestureDetector(
                               onTap: (){
                                 setState(() {
                                   if(!selectedIndexList.contains(index)) {
@@ -303,19 +330,33 @@ class _accountState extends State<favorite> {
                          child:Row(
                            children: [
                              SizedBox(width: 15,),
-                             Container(
-                               width: 40,
-                               height: 40,
-                               decoration: BoxDecoration(
-                                 shape: BoxShape.circle,
-                                 image: DecorationImage(
-                                   fit: BoxFit.cover,
-                                   image: NetworkImage(
-                                     "http://192.168.100.42:2000/get_trnd2_image?path=" +
-                                         _list[index].profile_photo.toString(),),
+                             GestureDetector(
+                               onTap: (){
+                                 print(_list[index].id);
+
+                                 Navigator.push(
+                                   context,
+                                   MaterialPageRoute(
+                                       builder: (context) => user(_list[index].id.toString().length,id,email,pasw)),
+                                 );
+
+
+                               },
+                               child:  Container(
+                                 width: 40,
+                                 height: 40,
+                                 decoration: BoxDecoration(
+                                   shape: BoxShape.circle,
+                                   image: DecorationImage(
+                                     fit: BoxFit.cover,
+                                     image: NetworkImage(
+                                       "http://192.168.100.42:2000/get_trnd2_image?path=" +
+                                           _list[index].profile_photo.toString(),),
+                                   ),
                                  ),
                                ),
                              ),
+
                              SizedBox(width: 13,),
                              Column(
                                children: [

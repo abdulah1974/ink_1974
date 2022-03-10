@@ -19,22 +19,32 @@ import 'package:shake_animation_widget/shake_animation_widget.dart';
 
 import 'package:shimmer/shimmer.dart';
 
+import 'model_accont.dart';
+import 'modeling.dart';
 import 'number of followrs.dart';
 class account extends StatefulWidget {
   late  int id;
-  account(int ids){
+  late String email;
+  late String paswd;
+  account(int ids, String emails, String passwords){
     id=ids;
+    email=emails;
+    paswd=passwords;
   }
 
   @override
-  _accountState createState() => _accountState(id);
+  _accountState createState() => _accountState(id,email,paswd);
 }
 
 class _accountState extends State<account> {
 
   late  int id;
-  _accountState(int ids){
+  late String email;
+  late String paswd;
+  _accountState(int ids,String emails, String passwords){
     id=ids;
+    email=emails;
+    paswd=passwords;
   }
   List numbers = [1.4];
 
@@ -126,25 +136,55 @@ class _accountState extends State<account> {
   bool isLoading = false;
   late bool _hasMore;
   final Set _saved = new Set();
-  Future<bool> onLikeButtonTapped(bool isLiked,  var lik) async {
+  Future<bool> onLikeButtonTapped(bool isLiked,  int lik) async {
     {
+      /*
       if (isLiked) {
 
 
-        _rateCount -= 1;
+          _rateCount -= 1;
+
+
+
       likes(lik);
-        print(_loadedPhotos[lik]["post_id"]);
+   //  print("unlike");
       } else {
-        likes(lik);
-        _rateCount += 1;
+       likes(lik);
+
+         _rateCount += 1;
+
+
+
+
+
+    //  print("like");
+      }
+
+       */
+
+      if(isLiked){
+
+        //  isLiked = false;
+
+          likes(lik);
+       ///   _rateCount -= 1;
+
+      }else{
+
+        //  isLiked = true;
+          likes(lik);
+        //  _rateCount += 1;
 
       }
+
+
+
       return !isLiked;
     }
   }
   List like=[];
   void likes(var index) async {
-    var response = await http.get(Uri.parse("http://192.168.100.42:2000/like?post_id="+index.toString()+"&email=abdullah@gmail.com&password=abd"));
+    var response = await http.get(Uri.parse("http://192.168.100.42:2000/like?post_id="+index.toString()+"&email="+email+"&password="+paswd));
 
     var jsondata = jsonDecode(response.body);
 
@@ -184,7 +224,6 @@ class _accountState extends State<account> {
 
 
 
-
   List delets = [];
   void deletpost(index) async {
     var response = await http3
@@ -201,6 +240,8 @@ class _accountState extends State<account> {
     });
   }
 late  List name=[];
+
+  late List<model_accont> like_=[];
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +268,7 @@ late  List name=[];
                     print("hi");
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => edit_profile(id)),
+                      MaterialPageRoute(builder: (context) => edit_profile(id,email,paswd)),
                     );
                   },
                 )),
@@ -288,17 +329,16 @@ late  List name=[];
 
 
                             Row(
-
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
 
-                                 Text(_loadedPhotos[index]["post"].toString(),style: TextStyle(color: Colors.white,fontSize: 20,), textAlign: TextAlign.center,),
+                                 Text(_loadedPhotos.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20,), textAlign: TextAlign.center,),
 
                                 ///Text(pip.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),),
 
-                                Text(follow.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),textAlign: TextAlign.center),
-
                                 Text(Following2.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),textAlign: TextAlign.center),
+
+                                Text(follow.length.toString(),style: TextStyle(color: Colors.white,fontSize: 20),textAlign: TextAlign.center),
 
                               ],
                             ),
@@ -372,7 +412,7 @@ late  List name=[];
                                           fit: BoxFit.cover,
                                           image: NetworkImage(
                                             "http://192.168.100.42:2000/get_trnd2_image?path=" +
-                                                _loadedPhotos[_loadedPhotos.length - 1 -index]["profile_photo"],),
+                                                _loadedPhotos[_loadedPhotos.length -1 -index]["profile_photo"],),
                                         ),
 
                                       ),
@@ -422,6 +462,7 @@ late  List name=[];
                                 ),
                                 Row(
                                   children: [
+
                                     LikeButton(
                                       circleColor: CircleColor(
                                           start: Color(0xff0e1313),
@@ -431,11 +472,12 @@ late  List name=[];
                                         dotSecondaryColor: Color(0xff000000),
                                       ),
                                       likeBuilder: (bool isLiked) {
+
                                         return Icon(
+
                                           _loadedPhotos[index]["IsLike"] != isLiked
                                               ? Icons.favorite
                                               : Icons.favorite_border_outlined,
-
                                           color: _loadedPhotos[index]["IsLike"] != isLiked
                                               ? Colors.red
                                               : Colors.white,
@@ -443,13 +485,15 @@ late  List name=[];
                                         );
                                       },
                                       size: 33,
-                                      likeCount: _loadedPhotos[index]["likes"],
+                                   likeCount: _loadedPhotos[index]["likes"],
                                       onTap: (isLiked) {
+
                                         return onLikeButtonTapped(
-                                          isLiked, _loadedPhotos[index]["post_id"],
+                                          isLiked,_loadedPhotos[index]["post_id"],
                                         );
                                       }
                                     ),
+
                                     SizedBox(
                                       width: 15,
                                     ),
@@ -461,7 +505,7 @@ late  List name=[];
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  comment(_loadedPhotos[index]["post_id"])),
+                                                  comment(_loadedPhotos[index]["post_id"],id)),
                                         );
                                       },
                                       icon: Icon(
@@ -470,8 +514,10 @@ late  List name=[];
                                       ),
                                       color: Colors.white,
                                     ),
+
                                   ],
                                 ),
+
 
                               ],
                             ),
@@ -574,7 +620,7 @@ late  List name=[];
                                       likeCount: _loadedPhotos[index]["likes"],
                                       onTap: (isLiked) {
                                         return onLikeButtonTapped(
-                                          isLiked, _loadedPhotos[index]["id"],
+                                          isLiked, _loadedPhotos[index]["post_id"],
                                         );
                                       },
 
@@ -592,7 +638,7 @@ late  List name=[];
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  comment(_loadedPhotos[index]["post_id"])),
+                                                  comment(_loadedPhotos[index]["post_id"],id)),
                                         );
                                       },
                                       icon: Icon(

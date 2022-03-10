@@ -15,20 +15,27 @@ import 'package:shake_animation_widget/shake_animation_widget.dart';
 import 'package:shimmer/shimmer.dart';
 class search extends StatefulWidget {
   late int id;
+  late String email;
+  late String pas;
 
-  search(int id2){
+  search(int id2, String emails, String passwords){
     id=id2;
+    email=emails;
+    pas=passwords;
   }
 
   @override
-  _accountState createState() => _accountState(id);
+  _accountState createState() => _accountState(id,email,pas);
 }
 
 class _accountState extends State<search> {
   late int id;
-
-  _accountState(int id2){
+  late String email;
+  late String pas;
+  _accountState(int id2,String emails, String passwords){
     id=id2;
+    email=emails;
+    pas=passwords;
   }
 
  // "https://www.instagram.com/static/images/ico/favicon-192.png/68d99ba29cc8.png"
@@ -47,12 +54,12 @@ class _accountState extends State<search> {
   int _rateCount=0;
   void aa() async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:3020/trnd"));
+        .get(Uri.parse("http://192.168.100.42:3/trnd"));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
       _loadedPhotos = jsondata;
-      print(_loadedPhotos[0]["username"]);
+     /// print(_loadedPhotos[0]["username"]);
     });
   }
 
@@ -64,7 +71,7 @@ class _accountState extends State<search> {
   List<Color> _colors = [
 
     Colors.white,
-    Colors.red
+    Colors.red,
   ];
   double _scaleFactor = 1.0;
   late Color color;
@@ -72,7 +79,7 @@ class _accountState extends State<search> {
   late bool _isLiked=true;
   void getlike() async {
     var response = await http2
-        .get(Uri.parse("http://192.168.100.42:3020/getlike2?post_id=3"),);
+        .get(Uri.parse("http://192.168.100.42:2000/getlike2?post_id=3"),);
 
     var json = jsonDecode(response.body);
 
@@ -108,7 +115,7 @@ class _accountState extends State<search> {
 
   void like() async {
     var response = await http3
-        .get(Uri.parse("http://192.168.100.42:3020/like?post_id=3&email=ink@gmail.com&password=ink"),);
+        .get(Uri.parse("http://192.168.100.42:2000/like?post_id=3&email=ink@gmail.com&password=ink"),);
 
     var json = jsonDecode(response.body);
 
@@ -140,7 +147,7 @@ class _accountState extends State<search> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => search_user(id)),
+                      builder: (context) => search_user(id,email,pas)),
                 );
 
               },)
@@ -174,7 +181,7 @@ class _accountState extends State<search> {
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
                                   fit: BoxFit.fill,
-                                  image: NetworkImage("http://192.168.100.42:2020/get_trnd2_image?path="+_loadedPhotos[index]["profile_photo"]),
+                                  image: NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+_loadedPhotos[index]["profile_photo"]),
                                 ),
                               ),
                             ),
@@ -234,7 +241,7 @@ class _accountState extends State<search> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => comment(_loadedPhotos[index]["id"])),
+                                      builder: (context) => comment(_loadedPhotos[index]["id"],id)),
                                 );
                               },
                               icon: Icon(
@@ -374,7 +381,7 @@ class _accountState extends State<search> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => comment(_loadedPhotos[index]["id"])),
+                                      builder: (context) => comment(_loadedPhotos[index]["id"],id)),
                                 );
                               },
                               icon: Icon(

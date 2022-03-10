@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,21 +16,29 @@ import 'package:shake_animation_widget/shake_animation_widget.dart';
 
 class home extends StatefulWidget {
   late  int id;
-   home(int ids){
+  late String email;
+  late String paswrd;
+   home(int ids, String emails, String passwords){
      id=ids;
+     email=emails;
+     paswrd=passwords;
    }
 
 
 
 
   @override
-  _homeState createState() => _homeState(id);
+  _homeState createState() => _homeState(id,email,paswrd);
 }
 
 class _homeState extends State<home> {
   late  int id;
-  _homeState(int ids){
+  late String email;
+  late String paswrd;
+  _homeState(int ids,String emails,String passwords){
     id=ids;
+    email=emails;
+    paswrd=passwords;
   }
 
   late File _image = new File('your initial file');
@@ -42,21 +51,21 @@ class _homeState extends State<home> {
 
   void aa() async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:2000/homepage3?user_id=2"));
+        .get(Uri.parse("http://192.168.100.42:2000/homepage3?user_id="+id.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
       _loadedPhotos = jsondata;
-      // print(_loadedPhotos[0]["username"]);
+    //  print("id:..."+_loadedPhotos[0]["id"]);
       isLoading=true;
     });
   }
 
 
-  void like(index) async {
+  void like(var index) async {
     var response = await http3
         .get(Uri.parse(
-        "http://192.168.100.42:3020/like?post_id=$index&email=abdullah@gmail.com&password=abd"),);
+        "http://192.168.100.42:2000/like?post_id="+index.toString()+"&email="+email+"&password="+paswrd),);
 
     var json = jsonDecode(response.body);
 
@@ -72,7 +81,7 @@ class _homeState extends State<home> {
 
   void getlike6() async {
     var response = await http2
-        .get(Uri.parse("http://192.168.100.42:2000/homepage3?user_id=2"),);
+        .get(Uri.parse("http://192.168.100.42:2000/homepage3?user_id="+id.toString()),);
 
     var json = jsonDecode(response.body);
 
@@ -90,16 +99,27 @@ class _homeState extends State<home> {
     });
   }
 
-  Future<bool> onLikeButtonTapped(bool isLiked, likes) async {
+  Future<bool> onLikeButtonTapped(bool isLiked,  int lik) async {
     {
-      if (isLiked) {
-        like(likes);
 
-        _rateCount -= 1;
-      } else {
-        like(likes);
-        _rateCount += 1;
+      if(isLiked){
+
+        //  isLiked = false;
+
+        like(lik);
+
+        ///   _rateCount -= 1;
+
+      }else{
+
+        //  isLiked = true;
+        like(lik);
+        //  _rateCount += 1;
+
       }
+
+
+
       return !isLiked;
     }
   }
@@ -107,7 +127,7 @@ class _homeState extends State<home> {
 
   void getfollowing() async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:2000/allfollow?fan_id=2"));
+        .get(Uri.parse("http://192.168.100.42:2000/allfollow?fan_id="+id.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
@@ -130,11 +150,12 @@ class _homeState extends State<home> {
   void initState() {
     getlike6();
     aliiuser(id);
-    aa();
-    getfollowing();
+   aa();
+   getfollowing();
     controller = PageController(viewportFraction: 0.9);
 
-    print("hi"+id.toString());
+   print(email);
+    print(paswrd);
     super.initState();
   }
 
@@ -160,7 +181,7 @@ class _homeState extends State<home> {
   List following = [];
   void follow(var i) async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:2000/follow?email=abdullah@gmail.com&password=abd&account_id="+i.toString()));
+        .get(Uri.parse("http://192.168.100.42:2000/follow?email="+email+"&password="+paswrd+"&account_id="+i.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
@@ -209,11 +230,11 @@ class _homeState extends State<home> {
                     color: Color.fromRGBO(1, 4, 30, 1),
                     child: Column(
                       children: [
-                       InkWell(
+                        GestureDetector(
                          onTap: (){
                            Navigator.push(
                              context,
-                             MaterialPageRoute(builder: (context) => user(_loadedPhotos[index]["id"],_loadedPhotos[index]["user_id"])),
+                             MaterialPageRoute(builder: (context) => user(_loadedPhotos[index]["user_id"],id,email,paswrd)),
                            );
                          },
                          child:Row(
@@ -225,9 +246,9 @@ class _homeState extends State<home> {
                                  shape: BoxShape.circle,
                                  image: DecorationImage(
 
-                                   fit: BoxFit.fill,
+                                   fit: BoxFit.cover,
                                    image: NetworkImage(
-                                     "http://192.168.100.42:3020/get_trnd2_image?path=" +
+                                     "http://192.168.100.42:2000/get_trnd2_image?path=" +
                                          _loadedPhotos[index]["profile_photo"],),
                                  ),
 
@@ -270,7 +291,7 @@ class _homeState extends State<home> {
                         Image.network(
                           "http://192.168.100.42:2000/get_trnd2_image?path="!=
                               null
-                              ? "http://192.168.100.42:3020/get_trnd2_image?path="+
+                              ? "http://192.168.100.42:2000/get_trnd2_image?path="+
                               _loadedPhotos[index]["image"].toString()
                               : "http://192.168.100.42:2000/get_trnd2_image?path=",
                           fit: BoxFit.cover,
@@ -299,8 +320,15 @@ class _homeState extends State<home> {
                                   size: 30,
                                 );
                               },
+
                               size: 33,
-                              likeCount:  _loadedPhotos[index]["likes"],
+                              likeCount:_loadedPhotos[index]["likes"],
+
+                              onTap: (isLiked) {
+                                return onLikeButtonTapped(
+                                  isLiked,_loadedPhotos[index]["id"],
+                                );
+                              },
                             ),
                             SizedBox(
                               width: 15,
@@ -312,7 +340,7 @@ class _homeState extends State<home> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          comment(_loadedPhotos[index]["id"])),
+                                          comment(_loadedPhotos[index]["id"],id)),
                                 );
 
                               },
@@ -371,8 +399,9 @@ class _homeState extends State<home> {
                               onTap: (){
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => user(_loadedPhotos[index]["user_id"],id)),
+                                  MaterialPageRoute(builder: (context) => user(_loadedPhotos[index]["user_id"],id,email,paswrd)),
                                 );
+
                               },
                               child:Text(
                                 _loadedPhotos[index]["account_name"],
@@ -436,7 +465,7 @@ class _homeState extends State<home> {
                           likeCount: _loadedPhotos[index]["likes"],
                           onTap: (isLiked) {
                             return onLikeButtonTapped(
-                              isLiked, _loadedPhotos[index]["id"],
+                              isLiked,_loadedPhotos[index]["id"],
                             );
                           },
 
@@ -454,7 +483,7 @@ class _homeState extends State<home> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      comment(_loadedPhotos[index]["id"])),
+                                      comment(_loadedPhotos[index]["id"],id)),
                             );
                           },
                           icon: Icon(
@@ -526,11 +555,11 @@ class _homeState extends State<home> {
                          });
                        },
                        style: ButtonStyle(
-                           side: MaterialStateProperty.all(
-                               const BorderSide(
-                                   width: 1, color: Colors.white)),
+                           side: MaterialStateProperty.all(allusers[index]["IsLike"]!=selectedIndexList.contains(index)?BorderSide(
+                               width: 2, color:Colors.blue):BorderSide(
+                               width: 2, color:Colors.white)),
                            foregroundColor:
-                           MaterialStateProperty.all(selectedIndexList.contains(index)?Colors.red:Colors.white),
+                           MaterialStateProperty.all(allusers[index]["IsLike"]!=selectedIndexList.contains(index)?Colors.blue:Colors.white),
                            padding: MaterialStateProperty.all(
                                const EdgeInsets.symmetric(
                                    vertical: 5, horizontal: 10)),

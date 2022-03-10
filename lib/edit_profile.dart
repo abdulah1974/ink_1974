@@ -12,13 +12,17 @@ import 'account.dart';
 class edit_profile extends StatefulWidget {
 
   late  int id;
-  edit_profile(int ids){
+  late String emails;
+  late String paswrd;
+  edit_profile(int ids, String email, String paswd){
     id=ids;
+    emails=email;
+    paswrd=paswd;
   }
 
 
   @override
-  _edit_profileState createState() => _edit_profileState(id);
+  _edit_profileState createState() => _edit_profileState(id,emails,paswrd);
 
 
 }
@@ -27,8 +31,12 @@ class _edit_profileState extends State<edit_profile> {
 
 
   late  int id;
-  _edit_profileState(int ids){
+  late String emails;
+  late String paswrd;
+  _edit_profileState(int ids,String email, String paswd){
     id=ids;
+    emails=email;
+    paswrd=paswd;
   }
 
   List pip = [];
@@ -52,7 +60,7 @@ class _edit_profileState extends State<edit_profile> {
   void edit_pio() async {
     var response = await http
         .get(Uri.parse(
-        "http://192.168.100.42:2000/bio?email=abdullah@gmail.com&password=abd&bio="+bio.text),);
+        "http://192.168.100.42:2000/bio?email="+emails+"&password="+paswrd+"&bio="+bio.text),);
 
     var json = jsonDecode(response.body);
 
@@ -70,7 +78,7 @@ class _edit_profileState extends State<edit_profile> {
   void update_usernam() async {
     var response = await http2
         .get(Uri.parse(
-        "http://192.168.100.42:2000/update_username?email=abdullah@gmail.com&password=abd&username="+username.text),);
+        "http://192.168.100.42:2000/update_username?email="+emails+"&password="+paswrd+"&username="+username.text),);
 
     var json = jsonDecode(response.body);
 
@@ -80,11 +88,6 @@ class _edit_profileState extends State<edit_profile> {
 
     });
   }
-
-
-
-
-
 
 
 
@@ -127,7 +130,7 @@ class _edit_profileState extends State<edit_profile> {
 
     var length = await imageFile.length();
 
-    var uri = Uri.parse("http://192.168.100.42:2000/bio2?email=abdullah@gmail.com&password=abd");
+    var uri = Uri.parse("http://192.168.100.42:2000/bio2?email="+emails+"&password="+paswrd);
 
     var request = new http1.MultipartRequest("POST", uri);
     var multipartFile = new http1.MultipartFile('recfile', stream, length,
@@ -143,7 +146,21 @@ class _edit_profileState extends State<edit_profile> {
       print(response);
     });
   }
+  String? get _errorText {
+    // at any time, we can get the text from _controller.value.text
+    final text = username.value.text;
+    // Note: you can do your own custom validation here
+    // Move this logic this outside the widget for more testable code
+    if (text.isEmpty) {
+      return 'Can\'t be empty';
+    }
+    if (text.length < 4) {
 
+      return 'Too short';
+    }
+    // return null if the text is valid
+    return null;
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -192,7 +209,6 @@ class _edit_profileState extends State<edit_profile> {
                  }else{
                    update_usernam();
                  }
-
 
 
              },
@@ -261,6 +277,7 @@ class _edit_profileState extends State<edit_profile> {
                     child:TextFormField(
                       controller: username,
                       maxLength: 30,
+                    ///  onChanged: (text) => setState(() => text),
                     //  initialValue: pip[0]["username"],
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -274,6 +291,8 @@ class _edit_profileState extends State<edit_profile> {
                         hintText: 'Username',
                         contentPadding: EdgeInsets.fromLTRB(20.0, 3.0, 23.0, 12.0),
                         border:OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+                      ///  errorText: _errorText,
+
 
                       ),
                     ),

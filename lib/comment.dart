@@ -5,20 +5,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 class comment extends StatefulWidget {
  late int id;
-
- comment(int id2){
+ late int myid;
+ comment(int id2, int myids){
    id=id2;
+   myid=myids;
  }
 
   @override
-  _commentState createState() => _commentState(id);
+  _commentState createState() => _commentState(id,myid);
 }
 
 class _commentState extends State<comment> {
 
   late int id;
-  _commentState(int id2){
+  late int myid;
+  _commentState(int id2,int myids){
     id=id2;
+    myid=myids;
   }
 
 
@@ -26,14 +29,15 @@ class _commentState extends State<comment> {
 
 
   void comment1() async {
-
+    var ur="http://192.168.100.42:2000/comment?id="+id.toString()+"&comment="+nameController.text+"&user_id="+myid.toString();
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:2000/comment?id="+id.toString()+"&comment="+nameController.text));
+        .get(Uri.parse(ur));
     var jsondata = jsonDecode(response.body);
 
 
     setState(() {
       _loadedPhotos = jsondata;
+
     });
   }
 
@@ -46,8 +50,18 @@ class _commentState extends State<comment> {
   }
 
   List _loadedPhotos = [];
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
+  List<String> _data = ['Horse', 'Cow', 'Camel', 'Sheep', 'Goat'];
+  void _insertMultipleItems() {
+    final items = ['Pig', 'Chichen', 'Dog'];
+    int insertIndex = 2;
+    _data.insertAll(insertIndex, items);
 
-
+    print(_data);
+    for (int offset = 0; offset < _data.length; offset++) {
+      _listKey.currentState?.insertItem(insertIndex + offset);
+    }
+  }
 
   void aa() async {
     var response = await http
@@ -63,7 +77,8 @@ class _commentState extends State<comment> {
     // TODO: implement initState
     super.initState();
     aa();
-    print(id);
+    print(myid);
+    _insertMultipleItems();
   }
 
   @override
@@ -107,8 +122,16 @@ class _commentState extends State<comment> {
                   SizedBox(width: 15,),
                   FloatingActionButton(
                     onPressed: (){
-                      addItemToList();
+                     // addItemToList();
                       nameController.clear();
+                      setState(() {
+
+
+                        _insertMultipleItems();
+
+                      });
+
+
                     },
                     child: Icon(Icons.send_outlined,color: Colors.black,size: 25),
                     backgroundColor: Colors.white,
@@ -129,6 +152,7 @@ class _commentState extends State<comment> {
         itemCount: _loadedPhotos.length,
         physics: BouncingScrollPhysics(),
         itemBuilder:(BuildContext context, int index){
+
           return  Column(
             children: [
               SizedBox(
@@ -158,6 +182,7 @@ class _commentState extends State<comment> {
                       _loadedPhotos[index]["username"],
                       style:
                       TextStyle(color: Colors.white, fontSize: 13),
+
                     ),
                   ),
 

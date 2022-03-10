@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,23 +13,31 @@ import 'package:like_button/like_button.dart';
 class user extends StatefulWidget {
   late int id;
   late int myid;
-
-  user(int n,int x) {
+  late String emails;
+  late String peas;
+  user(int n,int x, String email,String paswrd) {
     id = n;
     myid=x;
+    emails=email;
+    peas=paswrd;
+
+
   }
 
   @override
-  _userState createState() => _userState(id,myid);
+  _userState createState() => _userState(id,myid,emails,peas);
 }
 
 class _userState extends State<user> {
   late int id;
   late int myid;
-
-  _userState(int n,int x) {
+  late String emails;
+  late String peas;
+  _userState(int n,int x, String email,String paswrd) {
     id = n;
     myid=x;
+    emails=email;
+    peas=paswrd;
   }
 
 
@@ -58,6 +67,7 @@ class _userState extends State<user> {
     // TODO: implement initState
     super.initState();
     print("mmmmmmm:"+myid.toString());
+    print("cccccc:"+id.toString());
     pio();
 
      aa();
@@ -86,12 +96,12 @@ class _userState extends State<user> {
 
   void aa() async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:2000/userid?id="+id.toString()));
+        .get(Uri.parse("http://192.168.100.42:2000/userid?id="+id.toString()+"&myid="+myid.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
       _loadedPhotos = jsondata;
-      _loadedPhotos.length>0?print("no"):print("vv");
+
 
     });
 
@@ -102,7 +112,7 @@ class _userState extends State<user> {
   void follow() async {
 
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:2000/follow?email=abdullah@gmail.com&password=abd&account_id="+id.toString()));
+        .get(Uri.parse("http://192.168.100.42:2000/follow?email="+emails+"&password="+peas+"&account_id="+id.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
@@ -112,9 +122,6 @@ class _userState extends State<user> {
     });
 
   }
-
-
-
 
 
   List follows = [];
@@ -137,7 +144,7 @@ class _userState extends State<user> {
   void like(index) async {
     var response = await http3
         .get(Uri.parse(
-        "http://192.168.100.42:2000/like?post_id=$index&email=abdullah@gmail.com&password=abd"),);
+        "http://192.168.100.42:2000/like?post_id=$index&email=abdullah@gmail.com&password=ffff"),);
 
     var json = jsonDecode(response.body);
 
@@ -159,6 +166,8 @@ class _userState extends State<user> {
     }
     return true;
   }
+
+
   var follow_unfollow=[];
   void userfollow_or_unfollow() async {
     var response = await http3
@@ -251,13 +260,14 @@ class _userState extends State<user> {
             delegate: SliverChildBuilderDelegate(
 
                   (_, int index) {
-                return _loadedPhotos[index]["post"]!=0?ListTile(
+                ///    int rev=_loadedPhotos.length -1 -index;
+                return ListTile(
 
                   title: Column(
 
                     children: [
                       Visibility(
-                        visible: _loadedPhotos[index]["image"] == null ? false : true,
+                        visible: _loadedPhotos[_loadedPhotos.length - 1 -index]["image"] == null ? false : true,
                         child: Card(
                           semanticContainer: true,
                           clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -275,8 +285,8 @@ class _userState extends State<user> {
 
                                         fit: BoxFit.cover,
                                         image: NetworkImage(
-                                          "http://192.168.100.42:3020/get_trnd2_image?path=" +
-                                              pip[index]["profile_photo"],),
+                                          "http://192.168.100.42:2000/get_trnd2_image?path=" +
+                                              _loadedPhotos[_loadedPhotos.length -1 -index]["profile_photo"],),
                                       ),
 
                                     ),
@@ -287,7 +297,7 @@ class _userState extends State<user> {
                                     child: Container(
                                       padding: EdgeInsets.all(10),
                                       child: Text(
-                                        pip[index]["username"],
+                                        _loadedPhotos[_loadedPhotos.length - 1 -index]["account_name"],
                                         style:
                                         TextStyle(color: Colors.white, fontSize: 15),
                                       ),
@@ -299,8 +309,9 @@ class _userState extends State<user> {
                                     width: 30,
 
                                     child:IconButton(
+                                      highlightColor:Color.fromRGBO(1, 4, 30, 1),
                                       onPressed: () {
-                                        button();
+                                      button();
                                       },
                                       icon: Icon(Icons.more_vert),
                                       iconSize: 23,
@@ -316,8 +327,8 @@ class _userState extends State<user> {
                               Image.network(
                                 "http://192.168.100.42:2000/get_trnd2_image?path="!=
                                     null
-                                    ? "http://192.168.100.42:3020/get_trnd2_image?path="+
-                                    _loadedPhotos[index]["image"].toString()
+                                    ? "http://192.168.100.42:2000/get_trnd2_image?path="+
+                                    _loadedPhotos[_loadedPhotos.length - 1 -index]["image"].toString()
                                     : "http://192.168.100.42:2000/get_trnd2_image?path=",
                                 fit: BoxFit.cover,
                                 height: 350,
@@ -325,46 +336,50 @@ class _userState extends State<user> {
                               ),
                               Row(
                                 children: [
+
                                   LikeButton(
-                                    circleColor: CircleColor(
-                                        start: Color(0xff0e1313),
-                                        end: Color(0xfff60e0e)),
-                                    bubblesColor: BubblesColor(
-                                      dotPrimaryColor: Color(0xff33b5e5),
-                                      dotSecondaryColor: Color(0xff000000),
-                                    ),
-                                    likeBuilder: (bool isLiked) {
-                                      return Icon(
-                                        _loadedPhotos[index]["IsLike"] != isLiked
-                                            ? Icons.favorite
-                                            : Icons.favorite_border_outlined,
+                                      circleColor: CircleColor(
+                                          start: Color(0xff0e1313),
+                                          end: Color(0xfff60e0e)),
+                                      bubblesColor: BubblesColor(
+                                        dotPrimaryColor: Color(0xff33b5e5),
+                                        dotSecondaryColor: Color(0xff000000),
+                                      ),
+                                      likeBuilder: (bool isLiked) {
 
-                                        color: _loadedPhotos[index]["IsLike"] != isLiked
-                                            ? Colors.red
-                                            : Colors.white,
-                                        size: 30,
-                                      );
-                                    },
+                                        return Icon(
 
-                                    size: 33,
-                                    likeCount: _loadedPhotos[index]["likes"],
-                                    onTap: (isLiked) {
-                                      return onLikeButtonTapped(
-                                        isLiked, _loadedPhotos[index]["post_id"],
-                                      );
-                                    },
+                                          _loadedPhotos[index]["IsLike"] != isLiked
+                                              ? Icons.favorite
+                                              : Icons.favorite_border_outlined,
+                                          color: _loadedPhotos[index]["IsLike"] != isLiked
+                                              ? Colors.red
+                                              : Colors.white,
+                                          size: 30,
+                                        );
+                                      },
+                                      size: 33,
+                                      likeCount: _loadedPhotos[index]["likes"],
+                                      onTap: (isLiked) {
 
+                                        return onLikeButtonTapped(
+                                          isLiked,_loadedPhotos[index]["post_id"],
+                                        );
+                                      }
                                   ),
+
                                   SizedBox(
                                     width: 15,
                                   ),
                                   IconButton(
+
+                                    highlightColor:Color.fromRGBO(1, 4, 30, 1),
                                     onPressed: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                comment(_loadedPhotos[index]["id"])),
+                                                comment(_loadedPhotos[index]["post_id"],id)),
                                       );
                                     },
                                     icon: Icon(
@@ -373,8 +388,10 @@ class _userState extends State<user> {
                                     ),
                                     color: Colors.white,
                                   ),
+
                                 ],
                               ),
+
 
                             ],
                           ),
@@ -387,10 +404,8 @@ class _userState extends State<user> {
                       ),
 
                       Visibility(
-
                         visible:  _loadedPhotos[index]["title"] == null ? false : true,
-                        child: Card(
-
+                        child:Card(
                           semanticContainer: true,
                           clipBehavior: Clip.antiAliasWithSaveLayer,
                           color: Color.fromRGBO(1, 4, 30, 1),
@@ -410,30 +425,27 @@ class _userState extends State<user> {
                                         fit: BoxFit.cover,
                                         image: NetworkImage(
                                           "http://192.168.100.42:2000/get_trnd2_image?path=" +
-                                              pip[index]["profile_photo"],),
+                                              _loadedPhotos[index]["profile_photo"],),
                                       ),
 
                                     ),
 
                                   ),
-
-                                  Expanded(
-                                    child: Container(
-
-                                      padding: EdgeInsets.all(10),
-                                      child: Text(
-                                        pip[index]["username"],
-                                        style:
-                                        TextStyle(color: Colors.white, fontSize: 15),
-                                      ),
-                                    ),
+                                  SizedBox(
+                                    width: 10,
                                   ),
+                                  Text(
+                                    _loadedPhotos[index]["account_name"],
+                                    style:
+                                    TextStyle(color: Colors.white, fontSize: 15),
+                                  ),
+                                  SizedBox(
+                                    width: 200,
 
-
-                                  Container(
-                                    width: 30,
-
-                                    child:IconButton(
+                                  ),
+                                  Flexible(
+                                    child: IconButton(
+                                      highlightColor:Color.fromRGBO(1, 4, 30, 1),
                                       onPressed: () {
                                         button();
                                       },
@@ -448,11 +460,13 @@ class _userState extends State<user> {
                               SizedBox(
                                 height: 10,
                               ),
+
                               Text(_loadedPhotos[index]['title']==null?_loadedPhotos[index]['title'].toString():_loadedPhotos[index]['title'],
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 15,
                                   )),
+
                               Row(
                                 children: [
                                   LikeButton(
@@ -492,12 +506,13 @@ class _userState extends State<user> {
                                     width: 15,
                                   ),
                                   IconButton(
+                                    highlightColor:Color.fromRGBO(1, 4, 30, 1),
                                     onPressed: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                comment(_loadedPhotos[index]["post_id"])),
+                                                comment(_loadedPhotos[index]["post_id"],id)),
                                       );
                                     },
                                     icon: Icon(
@@ -506,6 +521,8 @@ class _userState extends State<user> {
                                     ),
                                     color: Colors.white,
                                   ),
+
+
                                 ],
                               ),
                             ],
@@ -520,17 +537,9 @@ class _userState extends State<user> {
 
                     ],
                   ),
-                ):Column(
-                  children: [
-                    SizedBox(height: 110,),
-                Center(
-
-                 child:Icon(Icons.image_not_supported_outlined,color: Colors.white,size: 170,),
-                    ),
-                  ],
                 );
               },
-              childCount:_loadedPhotos.length,
+              childCount: _loadedPhotos.length,
             ),
           ),
         ],

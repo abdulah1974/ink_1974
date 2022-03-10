@@ -11,21 +11,27 @@ import 'package:ink/user.dart';
 import 'model_search.dart';
 class search_user extends StatefulWidget {
   late int id;
-
-  search_user(int id2){
+  late String emails;
+  late String paswrd;
+  search_user(int id2, String email, String pas){
     id=id2;
+    emails=email;
+    paswrd=pas;
   }
 
   @override
-  _search_userState createState() => _search_userState(id);
+  _search_userState createState() => _search_userState(id,emails,paswrd);
 }
 
 class _search_userState extends State<search_user> {
   late int id;
-
-  _search_userState(int id2)
+  late String emails;
+  late String paswrd;
+  _search_userState(int id2,String email, String pas)
   {
     id=id2;
+    emails=email;
+    paswrd=pas;
   }
 
 
@@ -128,11 +134,15 @@ class _search_userState extends State<search_user> {
                            // tc.text = results[ind]['username'];
                             query = results[ind]['username'];
                             setResults(query);
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => user(results[ind]["id"],id)),
+                                  builder: (context) => user(results[ind]["id"],id,emails,paswrd)),
                             );
+
+
+
                           });
                         },
 

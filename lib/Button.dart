@@ -9,23 +9,28 @@ import 'add_post.dart';
 import 'favorite.dart';
 class Button extends StatefulWidget {
   late int id;
-
-  Button(int id2){
+ late String emails;
+ late String passwords;
+  Button(int id2, String email, String password){
     id=id2;
+    emails=email;
+    passwords=password;
   }
 
   @override
-  _ButtonState createState() => _ButtonState(id);
+  _ButtonState createState() => _ButtonState(id,emails,passwords);
 }
 
 class _ButtonState extends State<Button> {
 
   late int id;
-
-  _ButtonState(int id2){
+ late String emails;
+ late String passwords;
+  _ButtonState(int id2, String email, String password){
     id=id2;
+    emails=email;
+    passwords=password;
   }
-
 
 
 
@@ -48,14 +53,15 @@ class _ButtonState extends State<Button> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    print(emails);
     cc();
     _widgetOptions1=_widgetOptions1 = <Widget>[
 
-      home(id),
-      search(id),
+      home(id,emails,passwords),
+      search(id,emails,passwords),
       add_post(),
-      favorite(id),
-      account(id),
+      favorite(id,emails,passwords),
+      account(id,emails,passwords),
     ];
   }
 

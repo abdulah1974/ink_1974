@@ -38,22 +38,46 @@ late int id;
 List _login = [];
 void login() async {
   var response = await http
-      .get(Uri.parse("http://192.168.100.42:2000/login?email=abdullah@gmail.com&password=abd"));
+      .get(Uri.parse("http://192.168.100.42:2000/login?email="+Email.text+"&password="+Password.text));
   var jsondata = jsonDecode(response.body);
 
   setState(() {
     _login = jsondata;
      print(_login[0]["id"]);
+    for(var i=0;i<_login.length;i++)
+    if (response.statusCode == 200) {
+      if (response.body == _login[i]["id"]) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("err"),
+        ));
+
+      } else {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => Button(_login[i]["id"],email,pass),
+          ),
+              (route) => false,
+        );
+      }
+    }
 
 
   });
 }
+TextEditingController Email = TextEditingController();
+TextEditingController Password = TextEditingController();
 @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    login();
+   Email.text;
+    Password.text;
   }
+ late  String email= Email.text;
+ late  String pass=   Password.text;
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +86,7 @@ void login() async {
       backgroundColor: Color.fromRGBO(1, 4, 30, 1),
       body:ListView.builder(
 
-          itemCount: _login.length,
+          itemCount:1,
           itemBuilder:(_,index){
             return Column(
 
@@ -83,6 +107,7 @@ void login() async {
                         SizedBox(height: 30,),
                         Container(
                           child:TextField(
+                            controller:Email,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
@@ -104,6 +129,7 @@ void login() async {
                         SizedBox(height: 30,),
                         Container(
                           child:TextField(
+                            controller:Password,
                             style: TextStyle(
 
 
@@ -133,13 +159,17 @@ void login() async {
                           shape: RoundedRectangleBorder(
                               borderRadius: new BorderRadius.circular(12)),
                           onPressed: () {
+                            /*
+                            for(var i=0;i<_login.length;i++)
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
-                                builder: (BuildContext context) => Button(_login[index]["id"]),
+                                builder: (BuildContext context) => Button(_login[i]["id"],email,pass),
                               ),
                                   (route) => false,
                             );
+
+                             */
                             login();
                           },
                           child: Text(
