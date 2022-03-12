@@ -512,7 +512,7 @@ class _userState extends State<user> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                comment(_loadedPhotos[index]["post_id"],id)),
+                                                comment(_loadedPhotos[index]["post_id"],myid)),
                                       );
                                     },
                                     icon: Icon(

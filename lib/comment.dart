@@ -1,8 +1,10 @@
 import 'dart:convert';
-
+import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ink/addcoment.dart';
+import 'package:ink/model_comment.dart';
 class comment extends StatefulWidget {
  late int id;
  late int myid;
@@ -46,21 +48,31 @@ class _commentState extends State<comment> {
   void addItemToList(){
     setState(() {
    comment1();
+
+
     });
   }
 
-  List _loadedPhotos = [];
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
-  List<String> _data = ['Horse', 'Cow', 'Camel', 'Sheep', 'Goat'];
-  void _insertMultipleItems() {
-    final items = ['Pig', 'Chichen', 'Dog'];
-    int insertIndex = 2;
-    _data.insertAll(insertIndex, items);
+  List  _loadedPhotos = [];
+  List<model_commdemt>  list = [];
 
-    print(_data);
-    for (int offset = 0; offset < _data.length; offset++) {
-      _listKey.currentState?.insertItem(insertIndex + offset);
-    }
+
+  List user=[];
+
+  void getr() async {
+    var response = await http
+        .get(Uri.parse("http://192.168.100.42:2000/get_usernamr_image?id="+id.toString()));
+    var jsondata = jsonDecode(response.body);
+
+    setState(() {
+      user = jsondata;
+      for(var i=0;i<user.length;i++){
+        list.add( new model_commdemt(usename:_loadedPhotos[i]["username"]));
+
+      }
+
+
+    });
   }
 
   void aa() async {
@@ -70,6 +82,11 @@ class _commentState extends State<comment> {
 
     setState(() {
       _loadedPhotos = jsondata;
+
+      for(var i=0;i<_loadedPhotos.length;i++){
+        list.add( new model_commdemt(usename:_loadedPhotos[i]["username"],comment:_loadedPhotos[i]["comment"],profile_photo: _loadedPhotos[i]["profile_photo"],tiem:_loadedPhotos[i]["time"] ));
+
+      }
     });
   }
   @override
@@ -77,8 +94,14 @@ class _commentState extends State<comment> {
     // TODO: implement initState
     super.initState();
     aa();
-    print(myid);
-    _insertMultipleItems();
+    print("myid:"+myid.toString());
+    getr();
+    print(id);
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+    print(now.hour);
+
+    print(formattedDate);
   }
 
   @override
@@ -92,7 +115,7 @@ class _commentState extends State<comment> {
       body:Stack(
         children: <Widget>[
           Container(
-            height: 650,
+            height: 640,
             child: postComment(),
           ),
           Align(
@@ -122,12 +145,25 @@ class _commentState extends State<comment> {
                   SizedBox(width: 15,),
                   FloatingActionButton(
                     onPressed: (){
-                     // addItemToList();
-                      nameController.clear();
+                  ///
+
+                      if(nameController.text==""){
+
+                      }else{
+                        addItemToList();
+                      }
                       setState(() {
 
 
-                        _insertMultipleItems();
+                        if(nameController.text==""){
+
+                        }else{
+                          list.insert(0, model_commdemt(comment:nameController.text,usename:list[0].usename,profile_photo:list[0].profile_photo,tiem:list[0].tiem ));
+                          nameController.clear();
+
+                        }
+
+
 
                       });
 
@@ -149,58 +185,47 @@ class _commentState extends State<comment> {
   Widget postComment()
        {
     return  ListView.builder(
-        itemCount: _loadedPhotos.length,
+
+        itemCount: list.length,
         physics: BouncingScrollPhysics(),
         itemBuilder:(BuildContext context, int index){
 
-          return  Column(
-            children: [
-              SizedBox(
-                width: 10,
+          return ListTile(
+            leading:Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+list[index].profile_photo.toString()),
+                ),
               ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+_loadedPhotos[index]["profile_photo"]),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: Text(
-                      _loadedPhotos[index]["username"],
-                      style:
-                      TextStyle(color: Colors.white, fontSize: 13),
-
-                    ),
-                  ),
-
-                  SizedBox(
-                    width: 184,
-                  ),
-
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
+            ),
+            title: Row(
+              children: [
                 Text(
-                _loadedPhotos[index]["comment"],
-                style: TextStyle(color: Colors.white, fontSize: 13,),
-               ),
+                  list[index].usename.toString(),
+                  style:TextStyle(color: Colors.white, fontSize: 13),
 
-            ],
+                ),
+                SizedBox(width: 10,),
+                Text(
+                  list[index].tiem.toString(),
+                  style:TextStyle(color: Colors.white, fontSize: 10),
+
+                ),
+              ],
+            ),
+
+
+            subtitle: Text(
+               list[index].comment.toString(),
+              style: TextStyle(color: Colors.white, fontSize: 13,),
+
+            ),
+
+
           );
         });
   }

@@ -59,7 +59,10 @@ class _accountState extends State<search> {
 
     setState(() {
       _loadedPhotos = jsondata;
-     /// print(_loadedPhotos[0]["username"]);
+      for(var a=0;a<_loadedPhotos.length;a++){
+        print(_loadedPhotos[a]["id"]);
+      }
+
     });
   }
 
