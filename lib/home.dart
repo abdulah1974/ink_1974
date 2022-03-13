@@ -352,7 +352,17 @@ class _homeState extends State<home> {
                             ),
                           ],
                         ),
-
+                        Row(
+                          children:
+                          [
+                            SizedBox(width: 5),
+                            Text(
+                              _loadedPhotos[index]["time"],
+                              style:TextStyle(color: Colors.white54, fontSize: 10),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 5),
                       ],
                     ),
                     shape: RoundedRectangleBorder(
@@ -494,6 +504,17 @@ class _homeState extends State<home> {
                         ),
                       ],
                     ),
+                    Row(
+                      children:
+                      [
+                        SizedBox(width: 5),
+                        Text(
+                          _loadedPhotos[index]["time"],
+                          style:TextStyle(color: Colors.white54, fontSize: 10),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 5),
                   ],
                 ),
                 shape: RoundedRectangleBorder(

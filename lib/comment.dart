@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:ink/dateTiem.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
@@ -74,7 +75,7 @@ class _commentState extends State<comment> {
 
     });
   }
-
+  late DateTime time1;
   void aa() async {
     var response = await http
         .get(Uri.parse("http://192.168.100.42:2000/getcomment?post_id="+id.toString()));
@@ -85,6 +86,7 @@ class _commentState extends State<comment> {
 
       for(var i=0;i<_loadedPhotos.length;i++){
         list.add( new model_commdemt(usename:_loadedPhotos[i]["username"],comment:_loadedPhotos[i]["comment"],profile_photo: _loadedPhotos[i]["profile_photo"],tiem:_loadedPhotos[i]["time"] ));
+      ///  time1 = DateTime.parse(_loadedPhotos[i]["time"]);
 
       }
     });
@@ -93,16 +95,47 @@ class _commentState extends State<comment> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     aa();
     print("myid:"+myid.toString());
     getr();
     print(id);
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
-    print(now.hour);
 
-    print(formattedDate);
+    //String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+
+
+
+
+
+
+  //  print(formattedDate);
+
+  //  dateTiem s=new dateTiem();
+   // s.convertToAgo(input);
+
+
+
   }
+
+
+ //  dateTiem s=new dateTiem();
+  String convertToAgo(DateTime input){
+    Duration diff = DateTime.now().difference(input);
+
+    if(diff.inDays >= 1){
+      return '${diff.inDays} day(s) ago';
+    } else if(diff.inHours >= 1){
+      return '${diff.inHours} hour(s) ago';
+    } else if(diff.inMinutes >= 1){
+      return '${diff.inMinutes} minute(s) ago';
+    } else if (diff.inSeconds >= 1){
+      return '${diff.inSeconds} second(s) ago';
+    } else {
+      return 'just now';
+    }
+  }
+ // var nows = new DateTime.now();
+
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +183,7 @@ class _commentState extends State<comment> {
                       if(nameController.text==""){
 
                       }else{
-                        addItemToList();
+                      ///  addItemToList();
                       }
                       setState(() {
 
@@ -158,8 +191,13 @@ class _commentState extends State<comment> {
                         if(nameController.text==""){
 
                         }else{
-                          list.insert(0, model_commdemt(comment:nameController.text,usename:list[0].usename,profile_photo:list[0].profile_photo,tiem:list[0].tiem ));
-                          nameController.clear();
+
+                          DateTime now = DateTime.now();
+                          // print(convertToAgo(now));
+
+                          list.insert(0, model_commdemt(comment:nameController.text,usename:list[0].usename,profile_photo:list[0].profile_photo,tiem:convertToAgo(now)));
+
+                            nameController.clear();
 
                         }
 
@@ -202,28 +240,30 @@ class _commentState extends State<comment> {
                 ),
               ),
             ),
-            title: Row(
+            title:  Text(
+              list[index].usename.toString(),
+              style:TextStyle(color: Colors.white, fontSize: 13),
+
+            ),
+
+            subtitle:Column(
+               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+
                 Text(
-                  list[index].usename.toString(),
-                  style:TextStyle(color: Colors.white, fontSize: 13),
+                  list[index].comment.toString(),
+                  style: TextStyle(color: Colors.white, fontSize: 13,),
 
                 ),
-                SizedBox(width: 10,),
+                SizedBox(height: 2.5,),
                 Text(
                   list[index].tiem.toString(),
-                  style:TextStyle(color: Colors.white, fontSize: 10),
+                  style:TextStyle(color: Colors.white54, fontSize: 10),
 
                 ),
               ],
-            ),
+            )
 
-
-            subtitle: Text(
-               list[index].comment.toString(),
-              style: TextStyle(color: Colors.white, fontSize: 13,),
-
-            ),
 
 
           );

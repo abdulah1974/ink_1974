@@ -515,9 +515,21 @@ late  List name=[];
                                       color: Colors.white,
                                     ),
 
+
                                   ],
                                 ),
 
+                             Row(
+                               children:
+                               [
+                                 SizedBox(width: 5),
+                                 Text(
+                                   _loadedPhotos[index]["time"],
+                                   style:TextStyle(color: Colors.white54, fontSize: 10),
+                                 ),
+                               ],
+                             ),
+                                SizedBox(height: 5),
 
                               ],
                             ),
@@ -651,6 +663,17 @@ late  List name=[];
 
                                   ],
                                 ),
+                                Row(
+                                  children:
+                                  [
+                                    SizedBox(width: 5),
+                                    Text(
+                                      _loadedPhotos[index]["time"],
+                                      style:TextStyle(color: Colors.white54, fontSize: 10),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5),
                               ],
                             ),
                             shape: RoundedRectangleBorder(
