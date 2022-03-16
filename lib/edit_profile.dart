@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http3;
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart' as http1;
 import 'package:http/http.dart' as http2;
+
 import 'account.dart';
 class edit_profile extends StatefulWidget {
 
@@ -194,7 +195,7 @@ class _edit_profileState extends State<edit_profile> {
 
 
                 IconButton(onPressed: (){
-               Navigator.pop(context);
+             Navigator.pop(context);
 
                 if(bio.text=="")
                   {

@@ -48,7 +48,8 @@ dev_dependencies:
   adaptive_action_sheet: ^2.0.0
   http: ^0.13.4
   flappy_search_bar:
-
+  image_cropper: ^1.0.2
+ 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

@@ -62,13 +62,14 @@ class _commentState extends State<comment> {
 
   void getr() async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:2000/get_usernamr_image?id="+id.toString()));
+        .get(Uri.parse("http://192.168.100.42:2000/get_usernamr_image?id="+myid.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
       user = jsondata;
       for(var i=0;i<user.length;i++){
-        list.add( new model_commdemt(usename:_loadedPhotos[i]["username"]));
+     ///   list.add( new model_commdemt(usename:user[i]["username"],profile_photo:user[i]["profile_photo"]));
+     ///   print(user[i]["id"]);
 
       }
 
@@ -183,7 +184,7 @@ class _commentState extends State<comment> {
                       if(nameController.text==""){
 
                       }else{
-                      ///  addItemToList();
+                       addItemToList();
                       }
                       setState(() {
 
@@ -195,7 +196,7 @@ class _commentState extends State<comment> {
                           DateTime now = DateTime.now();
                           // print(convertToAgo(now));
 
-                          list.insert(0, model_commdemt(comment:nameController.text,usename:list[0].usename,profile_photo:list[0].profile_photo,tiem:convertToAgo(now)));
+                          list.insert(0, model_commdemt(comment:nameController.text,usename:user[0]["username"],profile_photo:user[0]["profile_photo"],tiem:convertToAgo(now)));
 
                             nameController.clear();
 

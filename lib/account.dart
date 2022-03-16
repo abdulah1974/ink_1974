@@ -241,7 +241,6 @@ class _accountState extends State<account> {
   }
 late  List name=[];
 
-  late List<model_accont> like_=[];
 
   @override
   Widget build(BuildContext context) {
@@ -386,6 +385,7 @@ late  List name=[];
               delegate: SliverChildBuilderDelegate(
 
                     (_, int index) {
+
                   ///    int rev=_loadedPhotos.length -1 -index;
                   return ListTile(
 
@@ -437,7 +437,73 @@ late  List name=[];
                                       child:IconButton(
                                         highlightColor:Color.fromRGBO(1, 4, 30, 1),
                                         onPressed: () {
-                                          button( _loadedPhotos[index]["post_id"]);
+                                       //   button( _loadedPhotos[_loadedPhotos.length - 1 -index]["post_id"]);
+                                          setState(() {
+                                            //  _loadedPhotos[index]['name'] ?? ''
+
+                                            showModalBottomSheet<String>(
+                                              backgroundColor: Colors.transparent,
+                                              context: context,
+                                              isScrollControlled:true,
+                                              builder: (BuildContext ctx) {
+                                                return Container(
+                                                  height: MediaQuery.of(context).size.height * 0.2,
+                                                  decoration: BoxDecoration(
+                                                      color:  Color.fromRGBO(15, 3, 50, 1.0),
+                                                      borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
+                                                  ),
+
+                                                  child: Column(
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          SizedBox(width: 350,child: Icon(Icons.arrow_drop_down,size: 40,color: Colors.white,),)
+                                                        ],
+                                                      ),
+                                                      SizedBox(height: 25,),
+                                                      Column(
+                                                        children: [
+                                                          InkWell(
+                                                            child:Center(
+                                                              child: Text("Delete  post",style: TextStyle(fontSize: 25,color: Colors.white),),
+                                                            ),
+                                                            onTap: (){
+                                                              Navigator.pop(context);
+                                                              deletpost( _loadedPhotos[_loadedPhotos.length - 1 -index]["post_id"]);
+                                                              setState(() {
+                                                                _loadedPhotos.removeAt(_loadedPhotos.length - 1 -index);
+                                                              });
+                                                            },
+                                                          ),
+
+                                                          Divider(height: 15,color: Colors.white),
+                                                          InkWell(
+                                                            child:Center(
+                                                              child: Text("Close",style: TextStyle(fontSize: 25,color: Colors.white),),
+                                                            ),
+                                                            onTap: (){
+
+
+                                                              Navigator.pop(context);
+
+
+
+                                                            },
+                                                          ),
+
+                                                          Divider(height: 15,color: Colors.white),
+                                                        ],
+                                                      ),
+
+
+                                                    ],
+                                                  ),
+
+                                                );
+                                              },
+                                            );
+                                          });
+
                                         },
                                         icon: Icon(Icons.more_vert),
                                         iconSize: 23,
@@ -450,16 +516,25 @@ late  List name=[];
                                 SizedBox(
                                   height: 10,
                                 ),
-                                Image.network(
-                                  "http://192.168.100.42:2000/get_trnd2_image?path="!=
-                                      null
-                                      ? "http://192.168.100.42:2000/get_trnd2_image?path="+
-                                      _loadedPhotos[_loadedPhotos.length - 1 -index]["image"].toString()
-                                      : "http://192.168.100.42:2000/get_trnd2_image?path=",
-                                  fit: BoxFit.cover,
-                                  height: 350,
-                                  width: MediaQuery.of(context).size.width,
+
+
+                                Container(
+                                  height:  MediaQuery.of(context).size.height/2,
+                                  width: double.infinity,
+
+                                  child: FittedBox(
+                                    fit: BoxFit.fill,
+                                    child: Image.network(
+                                      "http://192.168.100.42:2000/get_trnd2_image?path="!=
+                                          null
+                                          ? "http://192.168.100.42:2000/get_trnd2_image?path="+
+                                          _loadedPhotos[_loadedPhotos.length - 1 -index]["image"].toString()
+                                          : "http://192.168.100.42:2000/get_trnd2_image?path=",),
+                                  ),
                                 ),
+
+
+
                                 Row(
                                   children: [
 
@@ -524,7 +599,7 @@ late  List name=[];
                                [
                                  SizedBox(width: 5),
                                  Text(
-                                   _loadedPhotos[index]["time"],
+                                   _loadedPhotos[_loadedPhotos.length - 1 -index]["time"],
                                    style:TextStyle(color: Colors.white54, fontSize: 10),
                                  ),
                                ],
@@ -533,6 +608,7 @@ late  List name=[];
 
                               ],
                             ),
+
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
@@ -585,7 +661,7 @@ late  List name=[];
                                       child: IconButton(
                                         highlightColor:Color.fromRGBO(1, 4, 30, 1),
                                         onPressed: () {
-                                          button( _loadedPhotos[index]["post_id"]);
+                                        //  button( _loadedPhotos[index]["post_id"]);
                                         },
                                         icon: Icon(Icons.more_vert),
                                         iconSize: 23,
@@ -695,6 +771,7 @@ late  List name=[];
         ),
     );
   }
+  /*
   void button(index) {
     showModalBottomSheet<String>(
       backgroundColor: Colors.transparent,
@@ -734,7 +811,12 @@ late  List name=[];
                       child: Text("Close",style: TextStyle(fontSize: 25,color: Colors.white),),
                     ),
                     onTap: (){
+
+
                       Navigator.pop(context);
+
+
+
                     },
                   ),
 
@@ -749,10 +831,15 @@ late  List name=[];
         );
       },
     );
+
   }
 
 
+   */
+
 }
+
+
 
 
 

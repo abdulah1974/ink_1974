@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:image_cropper/image_cropper.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
@@ -29,12 +29,45 @@ class _accountState extends State<add_post> {
 
     setState(() {
       _imageFile = File(pickedFile!.path);
-      
+      cropImage();
 
     });
   }
 
 
+  cropImage() async {
+    File? croppedFile = (await ImageCropper().cropImage(
+        sourcePath: _imageFile!.path,
+
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9,
+
+
+        ],
+        androidUiSettings:const AndroidUiSettings(
+
+          dimmedLayerColor:  Color.fromRGBO(1, 4, 30, 1),
+          toolbarTitle: 'Post',
+          toolbarColor: Color.fromRGBO(1, 4, 30, 1),
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.ratio7x5,
+          hideBottomControls: true,
+          lockAspectRatio: true,
+
+
+
+        )));
+    if (croppedFile != null) {
+      setState(() {
+        _imageFile = croppedFile;
+
+      });
+    }
+  }
 
   enableButton() {
     setState(() {
@@ -54,7 +87,7 @@ class _accountState extends State<add_post> {
 
     var length = await imageFile.length();
 
-    var uri = Uri.parse("http://192.168.100.42:3020/postimg?email=abdullah@gmail.com&password=abd");
+    var uri = Uri.parse("http://192.168.100.42:2000/postimg?email=abdullah@gmail.com&password=abd");
 
     var request = new http.MultipartRequest("POST", uri);
     var multipartFile = new http.MultipartFile('recfile', stream, length,
@@ -102,6 +135,7 @@ class _accountState extends State<add_post> {
             ),
 
             // create widgets for each tab bar here
+
             Expanded(
               child: TabBarView(
                 physics: BouncingScrollPhysics(),
@@ -122,7 +156,7 @@ class _accountState extends State<add_post> {
 
                                 ),
                               ),
-                              SizedBox(height: 20.0),
+                              SizedBox(height: 15),
                               Expanded(
                                 child:  Container(
                                   height: double.infinity,
@@ -134,12 +168,40 @@ class _accountState extends State<add_post> {
                                     child: _imageFile != null
                                         ? Column(
                                       children: [
-                                        SizedBox(
-                                          height: 300,
 
-                                          child: Image.file(_imageFile!),
+                                        Stack(
+                                          children:
+                                          [
+
+                                            SizedBox(
+                                              height: 300,
+
+                                              child: Center(
+                                                child: Image.file(_imageFile!),
+                                              ),
+                                            ),
+                                            Row(
+                                              children: [
+                                                SizedBox(width: 268,),
+                                               InkWell(
+                                                 child:Icon(
+                                                   Icons.clear,
+                                                   color: Colors.blue,
+                                                   size: 25,
+                                                 ),
+                                                 onTap: (){
+                                                setState(() {
+                                                  _imageFile = null;
+                                                });
+                                                 },
+                                               ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                        SizedBox(height: 50,),
+
+
+                                        SizedBox(height: 35,),
                                     TextButton(
                                       onPressed: () {
                                       setState(() {
@@ -150,9 +212,9 @@ class _accountState extends State<add_post> {
                                       style: ButtonStyle(
                                           side: MaterialStateProperty.all(
                                               const BorderSide(
-                                                  width: 2, color: Colors.white)),
+                                                  width: 2, color: Colors.blue)),
                                           foregroundColor:
-                                          MaterialStateProperty.all(Colors.red),
+                                          MaterialStateProperty.all(Colors.blue),
                                           padding: MaterialStateProperty.all(
                                               const EdgeInsets.symmetric(
                                                   vertical: 5, horizontal: 20)),
@@ -162,11 +224,16 @@ class _accountState extends State<add_post> {
                                     ),
                                       ],
                                     )
-                                        : Icon(
-                                      Icons.add_a_photo,
-                                      color: Colors.white,
-                                      size: 50,
-                                    ),
+                                        : GestureDetector(
+                                      child:Icon(
+                                        Icons.add_a_photo,
+                                        color: Colors.white,
+                                        size: 50,
+                                      ),
+                                      onTap: (){
+                                        getImage();
+                                      },
+                                    )
 
                                   ),
 
@@ -189,13 +256,21 @@ class _accountState extends State<add_post> {
                     maxLines: 7,
                     maxLength: 250,
                     decoration: InputDecoration(
-                        counterStyle: TextStyle(color: Colors.white),
-                        hintStyle: TextStyle(color: Colors.white),
-                        hintText: "Enter Remarks",
-                        focusedBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 1, color: Colors.white))),
-                  )
+                      counterStyle: TextStyle(color: Colors.white),
+                      hintStyle: TextStyle(color: Colors.white),
+                      hintText: "What are you thinking?",
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+
+                          borderSide:BorderSide(width: 1, color: Colors.white),
+
+
+                      ),
+
+                    ),
+
+                  ),
+
                 ],
               ),
             ),

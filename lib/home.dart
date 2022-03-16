@@ -215,6 +215,7 @@ class _homeState extends State<home> {
 
       body:isLoading?ListView.builder(
 
+
           itemCount: _loadedPhotos.length,
           controller: scrollController,
           physics: BouncingScrollPhysics(),
