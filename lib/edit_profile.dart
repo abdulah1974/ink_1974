@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -102,10 +102,48 @@ class _edit_profileState extends State<edit_profile> {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
         img=false;
+        cropImage();
       } else {
 
       }
     });
+  }
+  cropImage() async {
+    File? croppedFile = (await ImageCropper().cropImage(
+        sourcePath: _image.path,
+
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9,
+
+        ],
+
+        cropStyle:CropStyle.circle,
+
+        // rotating/straightening
+        androidUiSettings:const AndroidUiSettings(
+          cropFrameColor:  Color.fromRGBO(1, 4, 30, 1),
+
+          toolbarTitle: 'ink',
+          toolbarColor:  Color.fromRGBO(1, 4, 30, 1),
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.square,
+          dimmedLayerColor:  Color.fromRGBO(1, 4, 30, 1),
+          hideBottomControls: true,
+          lockAspectRatio: true,
+          backgroundColor: Color.fromRGBO(1, 4, 30, 1),
+          showCropGrid: false,
+
+        )));
+    if (croppedFile != null) {
+      setState(() {
+        _image = croppedFile;
+        print(croppedFile.path);
+      });
+    }
   }
 
 
@@ -172,8 +210,9 @@ class _edit_profileState extends State<edit_profile> {
          Row(
            children: [
              SizedBox(height: 100,width: 10,),
-             IconButton(
 
+             IconButton(
+             splashRadius: 20,
 
                onPressed: ()
              {
@@ -215,34 +254,67 @@ class _edit_profileState extends State<edit_profile> {
              },
 
 
-
-               icon: Icon(Icons.add_task_outlined),color: Colors.white,),
+                  splashRadius: 20,
+                  icon: Icon(Icons.add_task_outlined),color: Colors.white,),
 
 
            ],
          ),
          for(var i=0;i<pip.length;i++)
-          InkWell(
+          GestureDetector(
+
             child: Container(
               width: 110,
               height: 100,
+
               child: Visibility(
                 visible:img,
                 child:Container(
 
-                  decoration: BoxDecoration(
+                  child:Center(
+                    child:Container(
+
+                      child: Center(
+                        child:pip[i]["profile_photo"]==null?
+
+                        Container(
+                          child: Center(child: Text(charAt(pip[i]["username"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 40,fontWeight: FontWeight.bold),),),
+
+
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            shape: BoxShape.circle,
+
+
+                          ),
+
+                        ):Center(
+
+                            child:Container(
 
 
 
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path=" +
-                          pip[i]["profile_photo"],),
+                              decoration: BoxDecoration(
+
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+
+                                  fit: BoxFit.cover,
+
+                                  image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+pip[i]["profile_photo"],),
+
+
+                                ),
+
+                              ),
+
+                            )
+                        ),
+                      ),
+
 
                     ),
                   ),
-
                 ),
               ),
               decoration: BoxDecoration(
@@ -262,6 +334,7 @@ class _edit_profileState extends State<edit_profile> {
               getImage();
 
             },
+
           ),
           SizedBox(height: 20,),
           Card(
@@ -345,6 +418,16 @@ class _edit_profileState extends State<edit_profile> {
     );
 
   }
+  String charAt(String subject, int position) {
+    if (subject is! String ||
+        subject.length <= position ||
+        subject.length + position < 0) {
+      return '';
+    }
 
+    int _realPosition = position < 0 ? subject.length + position : position;
+
+    return subject[_realPosition];
+  }
 }
 

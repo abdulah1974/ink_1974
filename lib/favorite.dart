@@ -52,7 +52,7 @@ class _accountState extends State<favorite> {
   void follower() async {
     var response = await http3
         .get(Uri.parse(
-        "http://192.168.100.42:2000/getfollowing6666?account_id="+id.toString()),);
+        "http://192.168.100.42:2000/getfollowing6?account_id="+id.toString()),);
 
     var json = jsonDecode(response.body);
 

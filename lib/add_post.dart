@@ -49,14 +49,16 @@ class _accountState extends State<add_post> {
 
         ],
         androidUiSettings:const AndroidUiSettings(
-
+          cropFrameColor:  Color.fromRGBO(1, 4, 30, 1),
           dimmedLayerColor:  Color.fromRGBO(1, 4, 30, 1),
+          backgroundColor: Color.fromRGBO(1, 4, 30, 1),
           toolbarTitle: 'Post',
           toolbarColor: Color.fromRGBO(1, 4, 30, 1),
           toolbarWidgetColor: Colors.white,
           initAspectRatio: CropAspectRatioPreset.ratio7x5,
           hideBottomControls: true,
           lockAspectRatio: true,
+          showCropGrid: false,
 
 
 
@@ -162,80 +164,90 @@ class _accountState extends State<add_post> {
                                   height: double.infinity,
                                   margin: const EdgeInsets.only(
                                       left: 30.0, right: 30.0, top: 10.0),
-                                  child: ClipRRect(
-                                    borderRadius:
-                                    BorderRadius.circular(30.0),
-                                    child: _imageFile != null
-                                        ? Column(
-                                      children: [
+                                  child: ListView(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    children: [
+                                      ClipRRect(
 
-                                        Stack(
-                                          children:
-                                          [
+                                          child: _imageFile != null
+                                              ? Column(
+                                            children: [
 
-                                            SizedBox(
-                                              height: 300,
+                                              Stack(
+                                                children:
+                                                [
 
-                                              child: Center(
-                                                child: Image.file(_imageFile!),
+                                                  SizedBox(
+                                                    height: 300,
+
+                                                    child: Center(
+                                                      child: Image.file(_imageFile!),
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      SizedBox(width: 270,),
+                                                      InkWell(
+                                                        child:Icon(
+                                                          Icons.clear,
+                                                          color: Colors.white,
+                                                          size: 25,
+                                                        ),
+                                                        onTap: (){
+                                                          setState(() {
+                                                            _imageFile = null;
+                                                          });
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
-                                            ),
-                                            Row(
-                                              children: [
-                                                SizedBox(width: 268,),
-                                               InkWell(
-                                                 child:Icon(
-                                                   Icons.clear,
-                                                   color: Colors.blue,
-                                                   size: 25,
-                                                 ),
-                                                 onTap: (){
-                                                setState(() {
-                                                  _imageFile = null;
-                                                });
-                                                 },
-                                               ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
 
 
-                                        SizedBox(height: 35,),
-                                    TextButton(
-                                      onPressed: () {
-                                      setState(() {
-                                        upload(_imageFile!);
-                                        _imageFile = null;
-                                      });
-                                      },
-                                      style: ButtonStyle(
-                                          side: MaterialStateProperty.all(
-                                              const BorderSide(
-                                                  width: 2, color: Colors.blue)),
-                                          foregroundColor:
-                                          MaterialStateProperty.all(Colors.blue),
-                                          padding: MaterialStateProperty.all(
-                                              const EdgeInsets.symmetric(
-                                                  vertical: 5, horizontal: 20)),
-                                          textStyle: MaterialStateProperty.all(
-                                              const TextStyle(fontSize: 25))),
-                                      child: Text("upload"),
-                                    ),
-                                      ],
-                                    )
-                                        : GestureDetector(
-                                      child:Icon(
-                                        Icons.add_a_photo,
-                                        color: Colors.white,
-                                        size: 50,
+                                              SizedBox(height: 35,),
+                                              TextButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    upload(_imageFile!);
+                                                    _imageFile = null;
+                                                  });
+                                                },
+                                                style: ButtonStyle(
+                                                    side: MaterialStateProperty.all(
+                                                        const BorderSide(
+                                                            width: 2, color: Colors.white)),
+                                                    foregroundColor:
+                                                    MaterialStateProperty.all(Colors.white),
+                                                    padding: MaterialStateProperty.all(
+                                                        const EdgeInsets.symmetric(
+                                                            vertical: 5, horizontal: 20)),
+                                                    textStyle: MaterialStateProperty.all(
+                                                        const TextStyle(fontSize: 25))),
+                                                child: Text("upload"),
+                                              ),
+                                            ],
+                                          )
+                                              : SizedBox(
+                                            height: 350,
+                                            child:GestureDetector(
+
+                                            child:Icon(
+
+                                              Icons.add_a_photo,
+                                              color: Colors.white,
+                                              size: 55,
+                                            ),
+                                            onTap: (){
+                                              getImage();
+                                            },
+                                              ),
+                                          ),
+
+
                                       ),
-                                      onTap: (){
-                                        getImage();
-                                      },
-                                    )
-
-                                  ),
+                                    ],
+                                  )
 
                                 ),
 

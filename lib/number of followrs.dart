@@ -5,19 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:ink/Following.dart';
 import 'package:http/http.dart' as http3;
 class number extends StatefulWidget {
-  const number({Key? key}) : super(key: key);
+  int myid;
+   number(this.myid);
 
   @override
-  _numberState createState() => _numberState();
+  _numberState createState() => _numberState(myid);
 }
 
 class _numberState extends State<number> {
+  int myid;
+  _numberState(this.myid);
   List follow = [];
   void follower() async {
     var response = await http3
 
         .get(Uri.parse(
-        "http://192.168.100.42:2000/getfollowing?account_id=1"),);
+        "http://192.168.100.42:2000/getfollowing6?account_id="+myid.toString()),);
 
     var json = jsonDecode(response.body);
 
@@ -32,6 +35,7 @@ class _numberState extends State<number> {
     // TODO: implement initState
     super.initState();
     follower();
+    print(myid);
   }
   @override
   Widget build(BuildContext context) {

@@ -80,8 +80,9 @@ class _accountState extends State<account> {
     aa();
     pio();
 
-    follower();
-    Following();
+    Followers();
+    followings();
+    print(id);
     //_fetchData();
   }
 
@@ -101,7 +102,7 @@ class _accountState extends State<account> {
   }
 
   List follow = [];
-  void follower() async {
+  void followings() async {
     var response = await http3
         .get(Uri.parse(
         "http://192.168.100.42:2000/getfollower?fan_id="+id.toString()),);
@@ -117,10 +118,10 @@ class _accountState extends State<account> {
   }
 
   List Following2 = [];
-  void   Following() async {
+  void   Followers() async {
     var response = await http3
         .get(Uri.parse(
-        "http://192.168.100.42:2000/getfollowing?account_id="+id.toString()),);
+        "http://192.168.100.42:2000/getfollowing6?account_id="+id.toString()),);
 
     var json = jsonDecode(response.body);
 
@@ -293,23 +294,58 @@ late  List name=[];
                     return  Column(
                       children: [
                         Container(
-                          width: 110,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
 
-                              image: NetworkImage(
-                                "http://192.168.100.42:2000/get_trnd2_image?path=" +
-                                    pip[index]["profile_photo"],),
+                          child:Center(
+                            child:Container(
+
+                              child: Center(
+                                child:pip[index]["profile_photo"]==null?
+
+                                Container(
+                                  child: Center(child: Text(charAt(pip[index]["username"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 40,fontWeight: FontWeight.bold),),),
+                                  width: 100,
+                                  height: 100,
+
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    shape: BoxShape.circle,
+
+
+                                  ),
+
+                                ):Center(
+
+                                    child:Container(
+
+                                      width: 100,
+                                      height: 100,
+
+                                      decoration: BoxDecoration(
+
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+
+                                          fit: BoxFit.cover,
+
+                                          image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+pip[index]["profile_photo"],),
+
+
+                                        ),
+
+                                      ),
+
+                                    )
+                                ),
+                              ),
+
+
                             ),
                           ),
                         ),
                         SizedBox(height: 10,),
                         Container(
 
-                          child: Text(pip[index]["bio"],style: TextStyle(color: Colors.white,fontSize: 14),),
+                          child: Text(pip[index]["bio"]!=null?pip[index]["bio"]:"",style: TextStyle(color: Colors.white,fontSize: 14),),
                         ),
                         SizedBox(height: 10,),
 
@@ -359,14 +395,14 @@ late  List name=[];
                             InkWell(
                               child:Text("Followers",style: TextStyle(color: Colors.white,fontSize: 14),),
                               onTap: (){
-                                Navigator.push(context,MaterialPageRoute(builder: (context) =>number()));
+                                Navigator.push(context,MaterialPageRoute(builder: (context) =>number(id)));
                               },
                             ),
                           ///  SizedBox(width: 74,),
                             InkWell(
                               child:Text("Following",style: TextStyle(color: Colors.white,fontSize: 14),),
                               onTap: (){
-                                Navigator.push(context,MaterialPageRoute(builder: (context)  =>following()));
+                                Navigator.push(context,MaterialPageRoute(builder: (context)  =>following(id)));
                               },
                             ),
 
@@ -403,6 +439,56 @@ late  List name=[];
                                 Row(
                                   children: [
                                     Container(
+
+                                      child:Center(
+                                        child:Container(
+
+                                          child: Center(
+                                            child:_loadedPhotos[_loadedPhotos.length -1 -index]["profile_photo"]==null?
+
+                                            Container(
+                                              child: Center(child: Text(charAt(_loadedPhotos[_loadedPhotos.length -1 -index]["account_name"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 40,fontWeight: FontWeight.bold),),),
+                                              width: 40,
+                                              height: 40,
+
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue,
+                                                shape: BoxShape.circle,
+
+
+                                              ),
+
+                                            ):Center(
+
+                                                child:Container(
+
+                                                  width: 40,
+                                                  height: 40,
+
+                                                  decoration: BoxDecoration(
+
+                                                    shape: BoxShape.circle,
+                                                    image: DecorationImage(
+
+                                                      fit: BoxFit.cover,
+
+                                                      image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+_loadedPhotos[_loadedPhotos.length -1 -index]["profile_photo"],),
+
+
+                                                    ),
+
+                                                  ),
+
+                                                )
+                                            ),
+                                          ),
+
+
+                                        ),
+                                      ),
+                                    ),
+    /*
+                                    Container(
                                       width: 40,
                                       height: 40,
                                       decoration: BoxDecoration(
@@ -417,7 +503,13 @@ late  List name=[];
 
                                       ),
 
+
+
                                     ),
+
+     */
+
+
 
                                     Expanded(
                                       child: Container(
@@ -435,7 +527,7 @@ late  List name=[];
                                       width: 30,
 
                                       child:IconButton(
-                                        highlightColor:Color.fromRGBO(1, 4, 30, 1),
+
                                         onPressed: () {
                                        //   button( _loadedPhotos[_loadedPhotos.length - 1 -index]["post_id"]);
                                           setState(() {
@@ -505,9 +597,11 @@ late  List name=[];
                                           });
 
                                         },
+
                                         icon: Icon(Icons.more_vert),
                                         iconSize: 23,
                                         color: Colors.white,
+                                        splashRadius: 20,
                                       ),
                                     ),
 
@@ -630,6 +724,56 @@ late  List name=[];
                                 Row(
                                   children: [
                                     Container(
+
+                                      child:Center(
+                                        child:Container(
+
+                                          child: Center(
+                                            child:_loadedPhotos[_loadedPhotos.length -1 -index]["profile_photo"]==null?
+
+                                            Container(
+                                              child: Center(child: Text(charAt(_loadedPhotos[_loadedPhotos.length -1 -index]["account_name"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.bold),),),
+                                              width: 40,
+                                              height: 40,
+
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue,
+                                                shape: BoxShape.circle,
+
+
+                                              ),
+
+                                            ):Center(
+
+                                                child:Container(
+
+                                                  width: 40,
+                                                  height: 40,
+
+                                                  decoration: BoxDecoration(
+
+                                                    shape: BoxShape.circle,
+                                                    image: DecorationImage(
+
+                                                      fit: BoxFit.cover,
+
+                                                      image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+_loadedPhotos[_loadedPhotos.length -1 -index]["profile_photo"],),
+
+
+                                                    ),
+
+                                                  ),
+
+                                                )
+                                            ),
+                                          ),
+
+
+                                        ),
+                                      ),
+                                    ),
+                                    /*
+                                    Container(
                                       width: 40,
                                       height: 40,
                                       decoration: BoxDecoration(
@@ -645,6 +789,8 @@ late  List name=[];
                                       ),
 
                                     ),
+
+                                     */
                                     SizedBox(
                                       width: 10,
                                     ),
@@ -659,12 +805,76 @@ late  List name=[];
                                     ),
                                     Flexible(
                                       child: IconButton(
-                                        highlightColor:Color.fromRGBO(1, 4, 30, 1),
+
+
+
                                         onPressed: () {
-                                        //  button( _loadedPhotos[index]["post_id"]);
+                                          showModalBottomSheet<String>(
+                                            backgroundColor: Colors.transparent,
+                                            context: context,
+                                            isScrollControlled:true,
+                                            builder: (BuildContext ctx) {
+                                              return Container(
+                                                height: MediaQuery.of(context).size.height * 0.2,
+                                                decoration: BoxDecoration(
+                                                    color:  Color.fromRGBO(15, 3, 50, 1.0),
+                                                    borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
+                                                ),
+
+                                                child: Column(
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        SizedBox(width: 350,child: Icon(Icons.arrow_drop_down,size: 40,color: Colors.white,),)
+                                                      ],
+                                                    ),
+                                                    SizedBox(height: 25,),
+                                                    Column(
+                                                      children: [
+                                                        InkWell(
+                                                          child:Center(
+                                                            child: Text("Delete  post",style: TextStyle(fontSize: 25,color: Colors.white),),
+                                                          ),
+                                                          onTap: (){
+                                                            Navigator.pop(context);
+                                                            deletpost( _loadedPhotos[_loadedPhotos.length - 1 -index]["post_id"]);
+                                                            setState(() {
+                                                              _loadedPhotos.removeAt(_loadedPhotos.length - 1 -index);
+                                                            });
+                                                          },
+                                                        ),
+
+                                                        Divider(height: 15,color: Colors.white),
+                                                        InkWell(
+                                                          child:Center(
+                                                            child: Text("Close",style: TextStyle(fontSize: 25,color: Colors.white),),
+                                                          ),
+                                                          onTap: (){
+
+
+                                                            Navigator.pop(context);
+
+
+
+                                                          },
+                                                        ),
+
+                                                        Divider(height: 15,color: Colors.white),
+                                                      ],
+                                                    ),
+
+
+                                                  ],
+                                                ),
+
+                                              );
+                                            },
+                                          );
                                         },
+
                                         icon: Icon(Icons.more_vert),
                                         iconSize: 23,
+                                        splashRadius: 20,
                                         color: Colors.white,
                                       ),
                                     ),
@@ -756,7 +966,7 @@ late  List name=[];
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                             elevation: 5,
-                            margin: EdgeInsets.all(10),
+                        //    margin: EdgeInsets.all(10),
                           ),
                         ),
 
@@ -836,7 +1046,17 @@ late  List name=[];
 
 
    */
+  String charAt(String subject, int position) {
+    if (subject is! String ||
+        subject.length <= position ||
+        subject.length + position < 0) {
+      return '';
+    }
 
+    int _realPosition = position < 0 ? subject.length + position : position;
+
+    return subject[_realPosition];
+  }
 }
 
 

@@ -196,16 +196,76 @@ class _userState extends State<user> {
        for(var i=0;i<pip.length;i++)
          SliverAppBar(
         floating: true,
-        title:Text(pip[i]["username"] !=null ? pip[i]["username"] : "" ,style: TextStyle(color: Colors.white,fontSize: 25,)),
+           leading: new Container(
+
+             child: IconButton(
+               splashRadius: 20.8,
+
+               icon: new Icon(Icons.arrow_back),
+               onPressed: () => Navigator.of(context).pop(),
+             ),
+           ),
+        title:Text(pip[i]["username"] !=null ? pip[i]["username"] : "" ,style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.bold)),
         backgroundColor: Color.fromRGBO(1, 4, 30, 1),
         expandedHeight: 280,
-        flexibleSpace: FlexibleSpaceBar(
+
+         flexibleSpace: FlexibleSpaceBar(
 
           background:  Column(
             children: [
               SizedBox(height: 30,),
 
               SizedBox(height:50),
+              Container(
+
+                child:Center(
+                  child:Container(
+
+                    child: Center(
+                      child:pip[i]["profile_photo"]==null?
+
+                      Container(
+                        child: Center(child: Text(charAt(pip[i]["username"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 40,fontWeight: FontWeight.bold),),),
+                        width: 100,
+                        height: 100,
+
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
+
+
+                        ),
+
+                      ):Center(
+
+                          child:Container(
+
+                            width: 100,
+                            height: 100,
+
+                            decoration: BoxDecoration(
+
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+
+                                fit: BoxFit.cover,
+
+                                image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+pip[i]["profile_photo"],),
+
+
+                              ),
+
+                            ),
+
+                          )
+                      ),
+                    ),
+
+
+                  ),
+                ),
+              ),
+              /*
               Container(
                 width: 110,
                 height: 100,
@@ -219,6 +279,8 @@ class _userState extends State<user> {
                   ),
                 ),
               ),
+
+               */
               SizedBox(height: 10,),
               Visibility(
                  visible: pip[i]["bio"] == null ? false : true,
@@ -276,6 +338,57 @@ class _userState extends State<user> {
                             children: [
                               Row(
                                 children: [
+
+                                  Container(
+
+                                    child:Center(
+                                      child:Container(
+
+                                        child: Center(
+                                          child:_loadedPhotos[index]["profile_photo"]==null?
+
+                                          Container(
+                                            child: Center(child: Text(charAt(_loadedPhotos[index]["account_name"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 20),),),
+                                            width: 110,
+                                            height: 110,
+
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue,
+                                              shape: BoxShape.circle,
+
+
+                                            ),
+
+                                          ):Center(
+
+                                              child:Container(
+
+                                                width: 40,
+                                                height: 40,
+
+                                                decoration: BoxDecoration(
+
+                                                  shape: BoxShape.circle,
+                                                  image: DecorationImage(
+
+                                                    fit: BoxFit.cover,
+
+                                                    image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+_loadedPhotos[index]["profile_photo"],),
+
+
+                                                  ),
+
+                                                ),
+
+                                              )
+                                          ),
+                                        ),
+
+
+                                      ),
+                                    ),
+                                  ),
+                                  /*
                                   Container(
                                     width: 40,
                                     height: 40,
@@ -293,6 +406,8 @@ class _userState extends State<user> {
 
                                   ),
 
+                                   */
+
                                   Expanded(
                                     child: Container(
                                       padding: EdgeInsets.all(10),
@@ -309,9 +424,10 @@ class _userState extends State<user> {
                                     width: 30,
 
                                     child:IconButton(
-                                      highlightColor:Color.fromRGBO(1, 4, 30, 1),
+                                      splashRadius: 18,
+
                                       onPressed: () {
-                                      button();
+                                        button();
                                       },
                                       icon: Icon(Icons.more_vert),
                                       iconSize: 23,
@@ -426,6 +542,56 @@ class _userState extends State<user> {
                               Row(
                                 children: [
                                   Container(
+
+                                    child:Center(
+                                      child:Container(
+
+                                        child: Center(
+                                          child:_loadedPhotos[index]["profile_photo"]==null?
+
+                                          Container(
+                                            child: Center(child: Text(charAt(_loadedPhotos[index]["account_name"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),),
+                                            width: 40,
+                                            height: 40,
+
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue,
+                                              shape: BoxShape.circle,
+
+
+                                            ),
+
+                                          ):Center(
+
+                                              child:Container(
+
+                                                width: 40,
+                                                height: 40,
+
+                                                decoration: BoxDecoration(
+
+                                                  shape: BoxShape.circle,
+                                                  image: DecorationImage(
+
+                                                    fit: BoxFit.cover,
+
+                                                    image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+_loadedPhotos[index]["profile_photo"],),
+
+
+                                                  ),
+
+                                                ),
+
+                                              )
+                                          ),
+                                        ),
+
+
+                                      ),
+                                    ),
+                                  ),
+                                  /*
+                                  Container(
                                     width: 40,
                                     height: 40,
                                     decoration: BoxDecoration(
@@ -441,13 +607,15 @@ class _userState extends State<user> {
                                     ),
 
                                   ),
+
+                                   */
                                   SizedBox(
                                     width: 10,
                                   ),
                                   Text(
                                     _loadedPhotos[index]["account_name"],
                                     style:
-                                    TextStyle(color: Colors.white, fontSize: 15),
+                                    TextStyle(color: Colors.white, fontSize: 15,fontWeight: FontWeight.bold),
                                   ),
                                   SizedBox(
                                     width: 200,
@@ -455,7 +623,8 @@ class _userState extends State<user> {
                                   ),
                                   Flexible(
                                     child: IconButton(
-                                      highlightColor:Color.fromRGBO(1, 4, 30, 1),
+                                      splashRadius: 18,
+
                                       onPressed: () {
                                         button();
                                       },
@@ -552,7 +721,7 @@ class _userState extends State<user> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           elevation: 5,
-                          margin: EdgeInsets.all(10),
+                      ///    margin: EdgeInsets.all(10),
                         ),
                       ),
 
@@ -562,7 +731,7 @@ class _userState extends State<user> {
               },
               childCount: _loadedPhotos.length,
             ),
-          ),
+          )
         ],
       ),
     );
@@ -631,5 +800,16 @@ class _userState extends State<user> {
         );
       },
     );
+  }
+  String charAt(String subject, int position) {
+    if (subject is! String ||
+        subject.length <= position ||
+        subject.length + position < 0) {
+      return '';
+    }
+
+    int _realPosition = position < 0 ? subject.length + position : position;
+
+    return subject[_realPosition];
   }
 }

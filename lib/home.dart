@@ -156,6 +156,9 @@ class _homeState extends State<home> {
 
    print(email);
     print(paswrd);
+
+
+
     super.initState();
   }
 
@@ -241,20 +244,53 @@ class _homeState extends State<home> {
                          child:Row(
                            children: [
                              Container(
-                               width: 40,
-                               height: 40,
-                               decoration: BoxDecoration(
-                                 shape: BoxShape.circle,
-                                 image: DecorationImage(
 
-                                   fit: BoxFit.cover,
-                                   image: NetworkImage(
-                                     "http://192.168.100.42:2000/get_trnd2_image?path=" +
-                                         _loadedPhotos[index]["profile_photo"],),
+                               child:Center(
+                                 child:Container(
+
+                                   child: Center(
+                                     child:_loadedPhotos[index]["profile_photo"]==null?
+
+                                     Container(
+                                       child: Center(child: Text(charAt(_loadedPhotos[index]["account_name"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 25),),),
+                                       width: 40,
+                                       height: 40,
+
+                                       decoration: BoxDecoration(
+                                         color: Colors.blue,
+                                         shape: BoxShape.circle,
+
+
+                                       ),
+
+                                     ):Center(
+
+                                         child:Container(
+
+                                           width: 40,
+                                           height: 40,
+
+                                           decoration: BoxDecoration(
+
+                                             shape: BoxShape.circle,
+                                             image: DecorationImage(
+
+                                               fit: BoxFit.cover,
+
+                                               image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+_loadedPhotos[index]["profile_photo"],),
+
+
+                                             ),
+
+                                           ),
+
+                                         )
+                                     ),
+                                   ),
+
+
                                  ),
-
                                ),
-
                              ),
 
                              Expanded(
@@ -267,8 +303,6 @@ class _homeState extends State<home> {
                                  ),
                                ),
                              ),
-
-
                              Container(
                                width: 30,
 
@@ -387,20 +421,53 @@ class _homeState extends State<home> {
                     Row(
                       children: [
                         Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
 
-                              fit: BoxFit.fill,
-                              image: NetworkImage(
-                                "http://192.168.100.42:2000/get_trnd2_image?path=" +
-                                    _loadedPhotos[index]["profile_photo"],),
+                          child:Center(
+                            child:Container(
+
+                              child: Center(
+                                child:_loadedPhotos[index]["profile_photo"]==null?
+
+                                Container(
+                                  child: Center(child: Text(charAt(_loadedPhotos[index]["account_name"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 25),),),
+                                  width: 40,
+                                  height: 40,
+
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    shape: BoxShape.circle,
+
+
+                                  ),
+
+                                ):Center(
+
+                                    child:Container(
+
+                                      width: 40,
+                                      height: 40,
+
+                                      decoration: BoxDecoration(
+
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+
+                                          fit: BoxFit.cover,
+
+                                          image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+_loadedPhotos[index]["profile_photo"],),
+
+
+                                        ),
+
+                                      ),
+
+                                    )
+                                ),
+                              ),
+
+
                             ),
-
                           ),
-
                         ),
 
                         Expanded(
@@ -597,31 +664,60 @@ class _homeState extends State<home> {
                ),
 
                Center(
-                 child: Text(allusers[index]["username"],style: TextStyle(color: Colors.white,fontSize: 17),),
+                 child: Text(allusers[index]["username"],style: TextStyle(color: Colors.white,fontSize: 17,fontWeight: FontWeight.bold),),
                ),
 
                Container(
                  height: 450,
                  child:Center(
                    child:Container(
-                     width: 100,
-                     height: 100,
-                     decoration: BoxDecoration(
-                       shape: BoxShape.circle,
-                       image: DecorationImage(
 
-                           fit: BoxFit.cover,
-                           image: NetworkImage(
-                             "http://192.168.100.42:2000/get_trnd2_image?path=" +
-                                 allusers[index]["profile_photo"],),
+                     child: Center(
+                       child:allusers[index]["profile_photo"]==null?
 
+                       Container(
+                        child: Center(child: Text(charAt(allusers[index]["username"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 40,fontWeight: FontWeight.bold),),),
+                         width: 95,
+                         height: 95,
+
+                         decoration: BoxDecoration(
+                          color: Colors.blue,
+                           shape: BoxShape.circle,
+
+
+                         ),
+
+                       ):Center(
+
+                           child:Container(
+
+                           width: 95,
+                           height: 95,
+
+                           decoration: BoxDecoration(
+
+                             shape: BoxShape.circle,
+                             image: DecorationImage(
+
+                               fit: BoxFit.cover,
+
+                               image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path=" +allusers[index]["profile_photo"],),
+
+
+                             ),
+
+                           ),
+
+                         )
                        ),
-
                      ),
+
 
                    ),
                  ),
                ),
+
+
               ],
             );
           })
@@ -704,5 +800,16 @@ class _homeState extends State<home> {
         );
       },
     );
+  }
+  String charAt(String subject, int position) {
+    if (subject is! String ||
+        subject.length <= position ||
+        subject.length + position < 0) {
+      return '';
+    }
+
+    int _realPosition = position < 0 ? subject.length + position : position;
+
+    return subject[_realPosition];
   }
 }

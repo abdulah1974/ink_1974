@@ -47,6 +47,7 @@ class _search_userState extends State<search_user> {
     tc = TextEditingController();
    print("_search:"+id.toString());
 
+
   }
 
 
@@ -67,7 +68,15 @@ class _search_userState extends State<search_user> {
       appBar: new AppBar(
 
         backgroundColor:Color.fromRGBO(1, 4, 30, 1),
+        leading: new Container(
 
+          child: IconButton(
+            splashRadius: 20.8,
+
+            icon: new Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
 
         actions: [
           Container(
@@ -82,6 +91,7 @@ class _search_userState extends State<search_user> {
                 border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(7))),
 
                 suffixIcon: Icon(Icons.search),
+
                 hintText: "Search",
                 hintStyle: TextStyle( color: Colors.white),
               ),
@@ -117,18 +127,60 @@ class _search_userState extends State<search_user> {
                     itemCount: results.length,
                     itemBuilder: (con, ind) {
                       return   ListTile(
-                        leading:Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              fit: BoxFit.fill,
-                              image: NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+results[ind]["profile_photo"]),
-                            ),
-                          ),
-                        ),
-                        title: Text(results[ind]['username'],style: TextStyle(color: Colors.white),),
+                         title:Row(
+                           children: [
+                             Container(
+
+                               child:Center(
+                                 child:Container(
+
+                                   child: Center(
+                                     child:results[ind]["profile_photo"]==null?
+
+                                     Container(
+                                       child: Center(child: Text(charAt(results[ind]["username"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),),
+                                       width: 38,
+                                       height: 38,
+
+                                       decoration: BoxDecoration(
+                                         color: Colors.blue,
+                                         shape: BoxShape.circle,
+
+
+                                       ),
+
+                                     ):Center(
+
+                                         child:Container(
+                                           width: 38,
+                                           height: 38,
+                                           decoration: BoxDecoration(
+
+                                             shape: BoxShape.circle,
+                                             image: DecorationImage(
+
+                                               fit: BoxFit.cover,
+
+                                               image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+results[ind]["profile_photo"],),
+
+
+                                             ),
+
+                                           ),
+
+                                         )
+                                     ),
+                                   ),
+
+
+                                 ),
+                               ),
+                             ),
+                             SizedBox(width: 3,),
+                             Text(results[ind]['username'],style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
+                           ],
+                         ),
+
                         onTap: () {
                           setState(() {
                            // tc.text = results[ind]['username'];
@@ -172,7 +224,19 @@ class _search_userState extends State<search_user> {
 
 
   }
+  String charAt(String subject, int position) {
+    if (subject is! String ||
+        subject.length <= position ||
+        subject.length + position < 0) {
+      return '';
+    }
+
+    int _realPosition = position < 0 ? subject.length + position : position;
+
+    return subject[_realPosition];
+  }
 }
+
 
 
 

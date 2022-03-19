@@ -143,6 +143,7 @@ class _accountState extends State<search> {
         backgroundColor: Color.fromRGBO(1, 4, 30, 1),
         appBar: AppBar(
           backgroundColor: Color.fromRGBO(1, 4, 30, 1),
+
           actions: [
             Container(
               width: 45,

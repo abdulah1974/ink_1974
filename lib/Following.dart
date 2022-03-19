@@ -4,19 +4,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http3;
 class following extends StatefulWidget {
-  const following({Key? key}) : super(key: key);
+  int? id;
+  following(this.id);
 
   @override
-  _numberState createState() => _numberState();
+  _numberState createState() => _numberState(id);
 }
 
 class _numberState extends State<following> {
+  int? id;
+  _numberState(this.id);
 /// http://192.168.100.42:2000/getfollower?fan_id=1
   List follow = [];
   void follower() async {
     var response = await http3
         .get(Uri.parse(
-        "http://192.168.100.42:2000/getfollower?fan_id=1"),);
+        "http://192.168.100.42:2000/getfollower?fan_id="+id.toString()),);
 
     var json = jsonDecode(response.body);
 
@@ -62,15 +65,51 @@ class _numberState extends State<following> {
                     width: 13,
                   ),
                   Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(
-                          "http://192.168.100.42:2000/get_trnd2_image?path=" +
-                              follow[index]["profile_photo"],),
+
+                    child:Center(
+                      child:Container(
+
+                        child: Center(
+                          child:follow[index]["profile_photo"]==null?
+
+                          Container(
+                            child: Center(child: Text(charAt(follow[index]["username"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 40,fontWeight: FontWeight.bold),),),
+                            width: 40,
+                            height: 40,
+
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              shape: BoxShape.circle,
+
+
+                            ),
+
+                          ):Center(
+
+                              child:Container(
+
+                                width: 40,
+                                height: 40,
+
+                                decoration: BoxDecoration(
+
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+
+                                    fit: BoxFit.cover,
+
+                                    image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+follow[index]["profile_photo"],),
+
+
+                                  ),
+
+                                ),
+
+                              )
+                          ),
+                        ),
+
+
                       ),
                     ),
                   ),
@@ -95,5 +134,16 @@ class _numberState extends State<following> {
             ],
           );
         }):Center(child: Text("Following",style: TextStyle(color: Colors.white,fontSize: 25),),);
+  }
+  String charAt(String subject, int position) {
+    if (subject is! String ||
+        subject.length <= position ||
+        subject.length + position < 0) {
+      return '';
+    }
+
+    int _realPosition = position < 0 ? subject.length + position : position;
+
+    return subject[_realPosition];
   }
 }
