@@ -144,7 +144,7 @@ class _userState extends State<user> {
   void like(index) async {
     var response = await http3
         .get(Uri.parse(
-        "http://192.168.100.42:2000/like?post_id=$index&email=abdullah@gmail.com&password=ffff"),);
+        "http://192.168.100.42:2000/like?post_id=$index&email=abdullah@gmail.com&password=abd"),);
 
     var json = jsonDecode(response.body);
 
@@ -189,7 +189,7 @@ class _userState extends State<user> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(1, 4, 30, 1),
 
-      body: CustomScrollView(
+      body:CustomScrollView(
         physics: BouncingScrollPhysics(),
 
         slivers: <Widget>[
@@ -317,13 +317,13 @@ class _userState extends State<user> {
       ),
           //3
 
-          SliverList(
+           SliverList(
 
             delegate: SliverChildBuilderDelegate(
 
                   (_, int index) {
                 ///    int rev=_loadedPhotos.length -1 -index;
-                return ListTile(
+                return _loadedPhotos[_loadedPhotos.length - 1 -index]["image"]!=null||_loadedPhotos[_loadedPhotos.length - 1 -index]["title"]!=null?ListTile(
 
                   title: Column(
 
@@ -348,7 +348,7 @@ class _userState extends State<user> {
                                           child:_loadedPhotos[index]["profile_photo"]==null?
 
                                           Container(
-                                            child: Center(child: Text(charAt(_loadedPhotos[index]["account_name"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 20),),),
+                                            child: Center(child: Text(charAt(_loadedPhotos[index]["account_name"]!=null?_loadedPhotos[index]["account_name"].toUpperCase():"",0),style: TextStyle(color: Colors.white,fontSize: 20),),),
                                             width: 110,
                                             height: 110,
 
@@ -412,7 +412,7 @@ class _userState extends State<user> {
                                     child: Container(
                                       padding: EdgeInsets.all(10),
                                       child: Text(
-                                        _loadedPhotos[_loadedPhotos.length - 1 -index]["account_name"],
+                                        _loadedPhotos[_loadedPhotos.length - 1 -index]["account_name"]!=null?_loadedPhotos[_loadedPhotos.length - 1 -index]["account_name"]:"",
                                         style:
                                         TextStyle(color: Colors.white, fontSize: 15),
                                       ),
@@ -507,12 +507,13 @@ class _userState extends State<user> {
 
                                 ],
                               ),
+                              ///     pip[i]["username"] !=null ? pip[i]["username"] : ""
                               Row(
                                 children:
                                 [
                                   SizedBox(width: 5),
                                   Text(
-                                    _loadedPhotos[index]["time"],
+                                    _loadedPhotos[index]["time"]!=null ?_loadedPhotos[index]["time"]:"",
                                     style:TextStyle(color: Colors.white54, fontSize: 10),
                                   ),
                                 ],
@@ -550,7 +551,7 @@ class _userState extends State<user> {
                                           child:_loadedPhotos[index]["profile_photo"]==null?
 
                                           Container(
-                                            child: Center(child: Text(charAt(_loadedPhotos[index]["account_name"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),),
+                                            child: Center(child: Text(charAt(_loadedPhotos[index]["account_name"]!=null?_loadedPhotos[index]["account_name"].toUpperCase():"",0),style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),),
                                             width: 40,
                                             height: 40,
 
@@ -613,7 +614,7 @@ class _userState extends State<user> {
                                     width: 10,
                                   ),
                                   Text(
-                                    _loadedPhotos[index]["account_name"],
+                                    _loadedPhotos[index]["account_name"]!=null?_loadedPhotos[index]["account_name"]:"",
                                     style:
                                     TextStyle(color: Colors.white, fontSize: 15,fontWeight: FontWeight.bold),
                                   ),
@@ -709,7 +710,7 @@ class _userState extends State<user> {
                                 [
                                   SizedBox(width: 5),
                                   Text(
-                                    _loadedPhotos[index]["time"],
+                                    _loadedPhotos[index]["time"]!=null?_loadedPhotos[index]["time"]:"",
                                     style:TextStyle(color: Colors.white54, fontSize: 10),
                                   ),
                                 ],
@@ -727,13 +728,29 @@ class _userState extends State<user> {
 
                     ],
                   ),
+                ):Column(
+                 children: [
+
+
+                 SizedBox(height: 100,),
+
+
+                   Container(
+                     child:Center(child: Icon(Icons.no_photography_outlined,size: 100,color: Colors.white,),),
+
+                   ),
+                   Container(
+                     child:Center(child: Text("No Posts",style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),),
+
+                   ),
+                 ],
                 );
               },
               childCount: _loadedPhotos.length,
-            ),
+            )
           )
         ],
-      ),
+      )
     );
   }
   void button() {

@@ -33,12 +33,12 @@ dependencies:
   scroll_snap_list: ^0.8.4
   get: ^4.6.1
   intl: ^0.17.0
+  shared_preferences: ^2.0.13
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   custom_navigation_bar:
-
   shimmer: ^1.1.1
   shake_animation_widget: ^1.0.0
   image_picker: ^0.8.2
@@ -49,7 +49,7 @@ dev_dependencies:
   http: ^0.13.4
   flappy_search_bar:
   image_cropper: ^1.0.2
-
+  get_storage: ^2.0.3
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

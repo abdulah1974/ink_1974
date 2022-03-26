@@ -1,12 +1,19 @@
 import 'dart:convert';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ink/singup.dart';
 import 'package:http/http.dart' as http;
 import 'Button.dart';
-void main() {
-  runApp(MyApp());
+import 'package:get_storage/get_storage.dart';
+void main()async{
+
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var email = prefs.getString('Email');
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home:email==null? MyApp():Button(2,"abdullah@gmail.com","abd"),));
 }
 
 class MyApp extends StatelessWidget {
@@ -34,6 +41,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+
+
+
+
 late int id;
 List _login = [];
 void login() async {
@@ -52,6 +63,8 @@ void login() async {
         ));
 
       } else {
+
+        _incrementCounter();
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -65,15 +78,35 @@ void login() async {
 
   });
 }
+
+final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+late Future<String> _counter;
+
+Future<void> _incrementCounter() async {
+  final SharedPreferences prefs = await _prefs;
+
+  setState(() {
+    _counter = prefs.setString('Email', Email.text).then((bool success) {
+      return _counter;
+    });
+  });
+}
+
+
+
 TextEditingController Email = TextEditingController();
 TextEditingController Password = TextEditingController();
 @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+
+
    Email.text;
     Password.text;
   }
+
  late  String email= Email.text;
  late  String pass=   Password.text;
 

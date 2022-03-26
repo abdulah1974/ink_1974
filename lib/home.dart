@@ -4,7 +4,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ink/comment.dart';
 import 'package:ink/user.dart';
 import 'package:like_button/like_button.dart';
@@ -13,7 +13,7 @@ import 'package:http/http.dart' as http2;
 import 'package:http/http.dart' as http3;
 import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:shake_animation_widget/shake_animation_widget.dart';
-
+import 'package:get_storage/get_storage.dart';
 class home extends StatefulWidget {
   late  int id;
   late String email;
@@ -154,13 +154,27 @@ class _homeState extends State<home> {
    getfollowing();
     controller = PageController(viewportFraction: 0.9);
 
-   print(email);
-    print(paswrd);
-
-
-
+  // print(email);
+  //  print(paswrd);
+     vvv();
     super.initState();
   }
+
+
+  void vvv()async{
+ setState(() async {
+
+   SharedPreferences prefs = await SharedPreferences.getInstance();
+   String? Email = await (prefs.getString('Email') ?? '');
+
+   print("Email:"+Email.toString());
+
+ });
+
+  }
+
+
+
 
   List allusers = [];
   void aliiuser(int fan_id) async {

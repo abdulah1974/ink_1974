@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:ink/home.dart';
 import 'package:ink/search.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'account.dart';
 import 'add_post.dart';
 import 'favorite.dart';
@@ -37,6 +37,7 @@ class _ButtonState extends State<Button> {
 
 
 
+
   void cc()
   {
     print("myid"+id.toString());
@@ -49,10 +50,18 @@ class _ButtonState extends State<Button> {
 
 
   late bool sel=true;
+
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  late Future<String> _counter;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _counter = _prefs.then((SharedPreferences prefs) {
+      print("button:"+ prefs.getString('Email').toString());
+      return prefs.getString('Email') ?? "";
+    });
+
     print(emails);
     cc();
     _widgetOptions1=_widgetOptions1 = <Widget>[
