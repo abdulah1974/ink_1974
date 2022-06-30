@@ -1,14 +1,9 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flappy_search_bar/scaled_tile.dart';
 import 'package:http/http.dart' as http3;
-import 'package:ink/Button.dart';
-import 'package:ink/models/model.dart';
 import 'package:ink/user.dart';
 
-import 'model_search.dart';
 class search_user extends StatefulWidget {
   late int id;
   late String emails;
@@ -83,19 +78,26 @@ class _search_userState extends State<search_user> {
 
             width: 310,
             child:  TextField(
+              autofocus: true,
               style: Theme.of(context).primaryTextTheme.button,
               decoration: InputDecoration(
 
-
-
                 border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(7))),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(
 
-                suffixIcon: Icon(Icons.search),
+                      color:Colors.transparent,
+                      width: 3,
+                    ),
+                ),
+                suffixIcon: Icon(Icons.search,color: Colors.white,),
 
                 hintText: "Search",
                 hintStyle: TextStyle( color: Colors.white),
               ),
-
+              cursorColor: Colors.white,
+              cursorWidth: 1,
               controller: tc,
               onChanged: (v) {
                 query = v;
@@ -190,7 +192,7 @@ class _search_userState extends State<search_user> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => user(results[ind]["id"],id,emails,paswrd)),
+                                  builder: (context) => users(results[ind]["id"],id,emails,paswrd)),
                             );
 
 

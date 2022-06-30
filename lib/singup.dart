@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'main.dart';
 void main() {
   runApp(singup());
@@ -55,7 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       SizedBox(height: 15,),
                       Container(
                         child:TextField(
-
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp('[a-z_0-9]')),
+                          ],
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),

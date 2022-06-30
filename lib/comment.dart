@@ -1,40 +1,53 @@
 import 'dart:convert';
-import 'package:flutter/widgets.dart';
-import 'package:ink/dateTiem.dart';
-import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ink/addcoment.dart';
 import 'package:ink/model_comment.dart';
-import 'dart:ui';
+import 'package:ink/user.dart';
+import 'user.dart';
+import 'package:flutter_mentions/flutter_mentions.dart';
+import 'package:http/http.dart' as http3;
+import 'package:http/http.dart' as http4;
+import 'package:http/http.dart' as http2;
+import 'package:linkfy_text/linkfy_text.dart';
 class comment extends StatefulWidget {
  late int id;
  late int myid;
- comment(int id2, int myids){
+ late String email;
+ late String pasword;
+ comment(int id2, int myids, String emails, String peas){
    id=id2;
    myid=myids;
+   email=emails;
+   pasword=peas;
+
  }
 
   @override
-  _commentState createState() => _commentState(id,myid);
+  _commentState createState() => _commentState(id,myid,email,pasword);
+
 }
+
+
 
 class _commentState extends State<comment> {
 
   late int id;
   late int myid;
-  _commentState(int id2,int myids){
+  late String email;
+  late String pasword;
+  _commentState(int id2,int myids, String emails, String peas){
     id=id2;
     myid=myids;
+    email=emails;
+    pasword=peas;
   }
 
 
-  TextEditingController nameController = TextEditingController();
+
 
 
   void comment1() async {
-    var ur="http://192.168.100.42:2000/comment?id="+id.toString()+"&comment="+nameController.text+"&user_id="+myid.toString();
+    var ur="http://192.168.100.42:2000/comment?id="+id.toString()+"&comment="+key.currentState!.controller!.text+"&user_id="+myid.toString();
     var response = await http
         .get(Uri.parse(ur));
     var jsondata = jsonDecode(response.body);
@@ -69,11 +82,6 @@ class _commentState extends State<comment> {
 
     setState(() {
       user = jsondata;
-      for(var i=0;i<user.length;i++){
-     ///   list.add( new model_commdemt(usename:user[i]["username"],profile_photo:user[i]["profile_photo"]));
-     ///   print(user[i]["id"]);
-
-      }
 
 
     });
@@ -89,7 +97,7 @@ class _commentState extends State<comment> {
       _loadedPhotos = jsondata;
 
       for(var i=0;i<_loadedPhotos.length;i++){
-        list.add( new model_commdemt(usename:_loadedPhotos[i]["username"],comment:_loadedPhotos[i]["comment"],profile_photo: _loadedPhotos[i]["profile_photo"],tiem:_loadedPhotos[i]["time"],dlet:_loadedPhotos[i]["comsetmy"],id_comment:_loadedPhotos[i]["id_comment"]));
+        list.add( new model_commdemt(usename:_loadedPhotos[i]["username"],comment:_loadedPhotos[i]["comment"],profile_photo: _loadedPhotos[i]["profile_photo"],tiem:_loadedPhotos[i]["time"],dlet:_loadedPhotos[i]["comsetmy"],id_comment:_loadedPhotos[i]["id_comment"],id: _loadedPhotos[i]["id"]));
       ///  time1 = DateTime.parse(_loadedPhotos[i]["time"]);
 
       }
@@ -119,6 +127,8 @@ class _commentState extends State<comment> {
     print("myid:"+myid.toString());
     getr();
     print(id);
+    print(email);
+    print(pasword);
 
     //String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
 
@@ -146,15 +156,74 @@ class _commentState extends State<comment> {
       return 'just now';
     }
   }
- // var nows = new DateTime.now();
+  List rows = [];
+  void search() async {
+    var response = await http3.get(Uri.parse("http://192.168.100.42:2000/serch_mention?username="+key.currentState!.controller!.markupText),);
 
+    var json = jsonDecode(response.body);
+
+    setState(() {
+      rows = json;
+
+
+
+
+    });
+  }
+
+  List _list=[];
+
+  void search4(var i) async {
+    var response = await http2.get(Uri.parse("http://192.168.100.42:2000/serch_mention2?username="+i+"&id="+myid.toString()),);
+
+    var json = jsonDecode(response.body);
+
+    setState(() {
+      _list = json;
+      for(int s=0;s<_list.length;s++){
+
+        print(_list[s]["id"]);
+        // print(aa);
+
+      }
+
+    });
+  }
+  List pus=[];
+  void push(var i) async {
+    var response = await http4.get(Uri.parse("http://192.168.100.42:2000/serch_mention2?username="+i+"&id="+myid.toString()),);
+
+    var json = jsonDecode(response.body);
+
+    setState(() {
+      pus = json;
+      for(int s=0;s<pus.length;s++){
+
+        print(pus[s]["id"]);
+        // print(aa);
+          if(pus[s]["myid"]!=true){
+            Navigator.push(context,MaterialPageRoute(builder: (context)  =>   users(pus[s]["id"],myid,email,pasword)));
+          }
+
+      }
+    });
+  }
+ // var nows = new DateTime.now();
+  GlobalKey<FlutterMentionsState> key = GlobalKey<FlutterMentionsState>();
+  String? search_;
+  String? text;
+  var _string;
+  List remiv_list=[];
  bool bo=false;
   List<int> selectedIndexList =[];
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
       backgroundColor: Color.fromRGBO(1, 4, 30, 1),
       appBar: AppBar(
+
         title:  Text("Comment"),
         leading:   IconButton(
             splashRadius: 20,
@@ -236,7 +305,6 @@ class _commentState extends State<comment> {
           Align(
             alignment: Alignment.bottomLeft,
             child: Container(
-
               padding: EdgeInsets.only(left: 10,bottom: 10,top: 10),
               height: 55,
               width: double.infinity,
@@ -244,9 +312,7 @@ class _commentState extends State<comment> {
               child: Row(
                 children: <Widget>[
                   Container(
-
                     width: 35,
-
                     child:ListView.builder(
                        physics: NeverScrollableScrollPhysics(),
                        itemCount: user.length,
@@ -257,7 +323,7 @@ class _commentState extends State<comment> {
                               child:Container(
 
                                 child: Center(
-                                  child:list[index].profile_photo==null?
+                                  child:user[index]["profile_photo"]==null?
 
                                   Container(
                                     child: Center(child: Text(charAt(user[index]["username"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),),
@@ -267,7 +333,6 @@ class _commentState extends State<comment> {
                                     decoration: BoxDecoration(
                                       color: Colors.blue,
                                       shape: BoxShape.circle,
-
 
                                     ),
 
@@ -292,7 +357,7 @@ class _commentState extends State<comment> {
 
                                         ),
 
-                                      )
+                                      ),
                                   ),
                                 ),
 
@@ -302,7 +367,140 @@ class _commentState extends State<comment> {
                           );
                         }),
                   ),
+                  Expanded(
 
+                    child: FlutterMentions(
+
+                      suggestionPosition: SuggestionPosition.Top,
+
+                      key: key,
+
+                      onChanged: (v){
+                        text=v;
+                        if(key.currentState!.controller!.text==""){
+
+                          remiv_list.clear();
+                        }
+
+                      },
+                      onSearchChanged: (_,v){
+                        _string=v;
+
+                         search();
+
+                        remiv_list.removeWhere((item) => item == v);
+
+                      },
+
+                      onMentionAdd: (s){
+                        text=s["display"];
+                        _string=s["display"];
+
+
+
+                      },
+                      /*
+              onSuggestionVisibleChanged: (b){
+                boolen=b;
+
+                if(boolen){
+                  if(lentgh > text!.length){
+
+                      s.removeWhere((item) => item == _string);
+
+
+                     print(search_);
+
+                    print("delete");
+                  }else{
+                    print("add");
+                  }
+                }
+
+                lentgh = text!.length;
+              },
+              */
+
+                      cursorColor: Colors.white,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(10),
+
+
+                          hintText: "Write comment...",
+                          hintStyle: TextStyle(color: Colors.white),
+                          border: InputBorder.none
+                      ),
+
+                      mentions: [
+
+                        Mention(
+
+
+                            trigger: '@',
+                            style:const TextStyle(
+                              color: Colors.blue,
+                            ),
+
+                            data: [
+                              for(int i=0;i<rows.length;i++)
+                                {
+                                  'id': '61as61fsa',
+                                  'display':rows[i]["username"],
+                                  'full_name': rows[i]["bio"]??"",
+                                  "imag": rows[i]["profile_photo"]??"",
+
+                                },
+                            ],
+
+                            matchAll: false,
+
+
+                            suggestionBuilder: (data) {
+
+                              search_==data["full_name"];
+
+
+                              return Container(
+
+                                 color: Colors.black,
+                                padding: EdgeInsets.all(10),
+                                child: Row(
+
+                                  children: <Widget>[
+                                    const SizedBox(
+                                      width: 15,
+                                    ),
+                                    CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                        "http://192.168.100.42:2000/get_trnd2_image?path=" +data["imag"],
+
+                                      ),
+                                      backgroundColor: Colors.white,
+                                    ),
+                                    const SizedBox(
+                                      width: 15,
+                                    ),
+                                    Column(
+
+                                      children: <Widget>[
+                                        Text(data['full_name'],style: TextStyle(color: Colors.white),),
+                                        Text(data['display'],style: TextStyle(color: Colors.white24),),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+
+
+                      ],
+                    ),
+
+                  ),
+
+
+                  /*
                   Expanded(
                     child: TextField(
                      // cursorWidth: 2,
@@ -320,30 +518,42 @@ class _commentState extends State<comment> {
                     ),
                   ),
 
+                   */
+
 
                   SizedBox(width: 15,),
                   FloatingActionButton(
                     onPressed: (){
                   ///
 
-                      if(nameController.text==""){
+                      if(key.currentState!.controller!.text==""){
 
                       }else{
-                       addItemToList();
+                        addItemToList();
+
                       }
                       setState(() {
 
 
-                        if(nameController.text==""){
+                        if(key.currentState!.controller!.text==""){
 
+                          print("nn");
                         }else{
 
                           DateTime now = DateTime.now();
                           // print(convertToAgo(now));
 
-                          list.insert(0, model_commdemt(comment:nameController.text,usename:user[0]["username"],profile_photo:user[0]["profile_photo"],tiem:convertToAgo(now)));
+                          list.insert(0, model_commdemt(comment:key.currentState!.controller!.text,usename:user[0]["username"],profile_photo:user[0]["profile_photo"],tiem:convertToAgo(now)));
 
-                            nameController.clear();
+
+                          key.currentState!.controller!.clear();
+
+                          remiv_list.add(_string);
+                          var distinctIds1 = remiv_list.toSet().toList();
+                          for(int s=0;s<distinctIds1.length;s++){
+                            search4(distinctIds1[s]);
+
+                          }
 
                         }
 
@@ -385,7 +595,11 @@ class _commentState extends State<comment> {
 
                        GestureDetector(
                          onTap: (){
+                           if(list[index].dlet!=true){
 
+
+                            Navigator.push(context,MaterialPageRoute(builder: (context)  =>   users(_loadedPhotos[index]["id"],myid,email,pasword)));
+                           }
                          },
                          child:Container(
 
@@ -396,10 +610,12 @@ class _commentState extends State<comment> {
                                  child:list[index].profile_photo==null?
 
                                  Container(
-                                   child: Center(child: Text(charAt(list[index].usename.toString().toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),),
+                                   child: Center(
+                                     child:Text(charAt(list[index].usename.toString().toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
+
+                                     ),
                                    width: 38,
                                    height: 38,
-
                                    decoration: BoxDecoration(
                                      color: Colors.blue,
                                      shape: BoxShape.circle,
@@ -428,7 +644,8 @@ class _commentState extends State<comment> {
 
                                        ),
 
-                                     )
+                                     ),
+
                                  ),
                                ),
 
@@ -440,6 +657,9 @@ class _commentState extends State<comment> {
                        SizedBox(width: 3,),
                       GestureDetector(
                         onTap: (){
+                          if(list[index].dlet!=true){
+                            Navigator.push(context,MaterialPageRoute(builder: (context)  =>   users(_loadedPhotos[index]["id"],myid,email,pasword)));
+                          }
 
                         },
                         child:Container(
@@ -461,13 +681,17 @@ class _commentState extends State<comment> {
                  ),
                ),
 
-           onLongPress: (){
+
+
+           onLongPress:(){
+
             setState(() {
               if(!selectedIndexList.contains(index)) {
 
              ///   selectedIndexList.add(index);
                 print("hhh");
                 if(list[index].dlet==true){
+
                   showModalBottomSheet<String>(
                     backgroundColor: Colors.transparent,
                     context: context,
@@ -560,9 +784,25 @@ class _commentState extends State<comment> {
               children: [
                 Container(
 
-                  child:Text(
+                  child:LinkifyText(
+
                     list[index].comment.toString(),
-                    style: TextStyle(color: Colors.white, fontSize: 16,),
+                    textAlign: TextAlign.left,
+
+                    linkTypes: const [
+                      LinkType.email,
+                      LinkType.url,
+                      LinkType.hashTag,
+                      LinkType.userTag
+                    ],
+                    linkStyle:const TextStyle(color: Colors.blue),
+                    textStyle: TextStyle(color: Colors.white,fontSize: 16),
+                    onTap: (link) {
+                      var i=link.value!.substring(1);
+                        push(i);
+
+                    },
+                    //   showSnackbar("link pressed: ${link.value!}"),
                   ),
                 ),
                 SizedBox(height: 5,),

@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:ink/search_user.dart';
@@ -8,11 +7,8 @@ import 'package:like_button/like_button.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart' as http2;
 import 'package:http/http.dart' as http3;
-import 'Photo.dart';
 import 'comment.dart';
-import 'package:bouncing_widget/bouncing_widget.dart';
 import 'package:shake_animation_widget/shake_animation_widget.dart';
-import 'package:shimmer/shimmer.dart';
 class search extends StatefulWidget {
   late int id;
   late String email;
@@ -147,7 +143,12 @@ class _accountState extends State<search> {
           actions: [
             Container(
               width: 45,
-              child: IconButton(icon:Icon(Icons.search,size: 30), onPressed: () {
+
+              child: IconButton(
+                splashRadius: 20,
+           //     highlightColor: Colors.transparent,
+           //     splashColor: Colors.transparent,
+                icon:Icon(Icons.search,size: 30), onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -245,7 +246,7 @@ class _accountState extends State<search> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => comment(_loadedPhotos[index]["id"],id)),
+                                      builder: (context) => comment(_loadedPhotos[index]["id"],id,email,pas)),
                                 );
                               },
                               icon: Icon(
@@ -385,7 +386,7 @@ class _accountState extends State<search> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => comment(_loadedPhotos[index]["id"],id)),
+                                      builder: (context) => comment(_loadedPhotos[index]["id"],id,email,pas)),
                                 );
                               },
                               icon: Icon(

@@ -1,8 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
-import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ink/comment.dart';
@@ -11,9 +8,7 @@ import 'package:like_button/like_button.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart' as http2;
 import 'package:http/http.dart' as http3;
-import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
-import 'package:shake_animation_widget/shake_animation_widget.dart';
-import 'package:get_storage/get_storage.dart';
+
 class home extends StatefulWidget {
   late  int id;
   late String email;
@@ -141,7 +136,7 @@ class _homeState extends State<home> {
 
 
   late AnimationController _controller;
-  ShakeAnimationController _shakeAnimationController = new ShakeAnimationController();
+
 
   late bool _isLiked = true;
   ScrollController scrollController = ScrollController();
@@ -165,7 +160,7 @@ class _homeState extends State<home> {
  setState(() async {
 
    SharedPreferences prefs = await SharedPreferences.getInstance();
-   String? Email = await (prefs.getString('Email') ?? '');
+   String? Email = (prefs.getString('Email') ?? '');
 
    print("Email:"+Email.toString());
 
@@ -177,9 +172,9 @@ class _homeState extends State<home> {
 
 
   List allusers = [];
-  void aliiuser(int fan_id) async {
+  void aliiuser(int fanId) async {
     var response = await http
-        .get(Uri.parse("http://192.168.100.42:2000/alluser?fan_id="+fan_id.toString()));
+        .get(Uri.parse("http://192.168.100.42:2000/alluser?fan_id="+fanId.toString()));
     var jsondata = jsonDecode(response.body);
 
     setState(() {
@@ -196,7 +191,7 @@ class _homeState extends State<home> {
   bool _showPreview = false;
   List<int> selectedIndexList =[];
   List following = [];
-  void follow(var i) async {
+  void follow(int i) async {
     var response = await http
         .get(Uri.parse("http://192.168.100.42:2000/follow?email="+email+"&password="+paswrd+"&account_id="+i.toString()));
     var jsondata = jsonDecode(response.body);
@@ -207,6 +202,21 @@ class _homeState extends State<home> {
 
     });
 
+  }
+  String convertToAgo(DateTime input){
+    Duration diff = DateTime.now().difference(input);
+
+    if(diff.inDays >= 1){
+      return '${diff.inDays} day(s) ago';
+    } else if(diff.inHours >= 1){
+      return '${diff.inHours} hour(s) ago';
+    } else if(diff.inMinutes >= 1){
+      return '${diff.inMinutes} minute(s) ago';
+    } else if (diff.inSeconds >= 1){
+      return '${diff.inSeconds} second(s) ago';
+    } else {
+      return 'just now';
+    }
   }
 
   @override
@@ -236,12 +246,12 @@ class _homeState extends State<home> {
           itemCount: _loadedPhotos.length,
           controller: scrollController,
           physics: BouncingScrollPhysics(),
-
+          reverse: false,
           itemBuilder: (BuildContext context, int index) {
             return Column(
               children: [
                 Visibility(
-                  visible: _loadedPhotos[index]["image"] == null ? false : true,
+                  visible: _loadedPhotos[_loadedPhotos.length -1-index]["image"] == null ? false : true,
                   child: Card(
                     semanticContainer: true,
                     clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -252,7 +262,7 @@ class _homeState extends State<home> {
                          onTap: (){
                            Navigator.push(
                              context,
-                             MaterialPageRoute(builder: (context) => user(_loadedPhotos[index]["user_id"],id,email,paswrd)),
+                             MaterialPageRoute(builder: (context) => users(_loadedPhotos[_loadedPhotos.length -1-index]["user_id"],id,email,paswrd)),
                            );
                          },
                          child:Row(
@@ -263,19 +273,17 @@ class _homeState extends State<home> {
                                  child:Container(
 
                                    child: Center(
-                                     child:_loadedPhotos[index]["profile_photo"]==null?
+                                     child:_loadedPhotos[_loadedPhotos.length -1-index]["profile_photo"]==null?
 
                                      Container(
-                                       child: Center(child: Text(charAt(_loadedPhotos[index]["account_name"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 25),),),
+                                       child: Center(child: Text(charAt(_loadedPhotos[_loadedPhotos.length -1-index]["account_name"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 25),),),
                                        width: 40,
                                        height: 40,
 
                                        decoration: BoxDecoration(
                                          color: Colors.blue,
                                          shape: BoxShape.circle,
-
-
-                                       ),
+                                         ),
 
                                      ):Center(
 
@@ -291,7 +299,7 @@ class _homeState extends State<home> {
 
                                                fit: BoxFit.cover,
 
-                                               image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+_loadedPhotos[index]["profile_photo"],),
+                                               image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+_loadedPhotos[_loadedPhotos.length -1-index]["profile_photo"],),
 
 
                                              ),
@@ -311,7 +319,7 @@ class _homeState extends State<home> {
                                child: Container(
                                  padding: EdgeInsets.all(10),
                                  child: Text(
-                                   _loadedPhotos[index]["account_name"],
+                                   _loadedPhotos[_loadedPhotos.length -1-index]["account_name"],
                                    style:
                                    TextStyle(color: Colors.white, fontSize: 15),
                                  ),
@@ -321,7 +329,7 @@ class _homeState extends State<home> {
                                width: 30,
 
                                child:IconButton(
-                                 highlightColor:Color.fromRGBO(1, 4, 30, 1),
+                                 splashRadius: 20,
                                  onPressed: () {
                                    button();
                                  },
@@ -341,7 +349,7 @@ class _homeState extends State<home> {
                           "http://192.168.100.42:2000/get_trnd2_image?path="!=
                               null
                               ? "http://192.168.100.42:2000/get_trnd2_image?path="+
-                              _loadedPhotos[index]["image"].toString()
+                              _loadedPhotos[_loadedPhotos.length -1-index]["image"].toString()
                               : "http://192.168.100.42:2000/get_trnd2_image?path=",
                           fit: BoxFit.cover,
                           height: 350,
@@ -349,6 +357,7 @@ class _homeState extends State<home> {
                         ),
                         Row(
                           children: [
+                            /*
                             LikeButton(
                               circleColor: CircleColor(
                                   start: Color(0xff0e1313),
@@ -389,7 +398,7 @@ class _homeState extends State<home> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          comment(_loadedPhotos[index]["id"],id)),
+                                          comment(_loadedPhotos[index]["id"],id,email,paswrd)),
                                 );
 
                               },
@@ -399,14 +408,21 @@ class _homeState extends State<home> {
                               ),
                               color: Colors.white,
                             ),
+
+                            */
+                            number_like(_loadedPhotos[_loadedPhotos.length -1-index]["post_id"],id,email,paswrd,_loadedPhotos[_loadedPhotos.length -1-index]["IsLike"],_loadedPhotos[_loadedPhotos.length -1-index]["likes"]),
                           ],
                         ),
+
                         Row(
                           children:
                           [
-                            SizedBox(width: 5),
+                           // convertToAgo(now)
+
+                            SizedBox(width: 5,height: 15,),
+
                             Text(
-                              _loadedPhotos[index]["time"],
+                              _loadedPhotos[_loadedPhotos.length -1-index]["time"],
                               style:TextStyle(color: Colors.white54, fontSize: 10),
                             ),
                           ],
@@ -423,7 +439,7 @@ class _homeState extends State<home> {
                 ),
 
               Visibility(
-                visible:  _loadedPhotos[index]["title"] == null ? false : true,
+                visible:  _loadedPhotos[_loadedPhotos.length -1-index]["title"] == null ? false : true,
                 child:Card(
                 semanticContainer: true,
                 clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -491,12 +507,12 @@ class _homeState extends State<home> {
                               onTap: (){
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => user(_loadedPhotos[index]["user_id"],id,email,paswrd)),
+                                  MaterialPageRoute(builder: (context) => users(_loadedPhotos[_loadedPhotos.length -1-index]["user_id"],id,email,paswrd)),
                                 );
 
                               },
                               child:Text(
-                                _loadedPhotos[index]["account_name"],
+                                _loadedPhotos[_loadedPhotos.length -1-index]["account_name"],
                                 style:
                                 TextStyle(color: Colors.white, fontSize: 15),
                               ),
@@ -509,7 +525,7 @@ class _homeState extends State<home> {
                           width: 30,
 
                           child:IconButton(
-                            highlightColor:Color.fromRGBO(1, 4, 30, 1),
+                            splashRadius: 20,
                             onPressed: () {
                               button();
                             },
@@ -525,73 +541,77 @@ class _homeState extends State<home> {
                     SizedBox(
                       height: 10,
                     ),
-                    Text(_loadedPhotos[index]['title']==null?_loadedPhotos[index]['title'].toString():_loadedPhotos[index]['title'],
+                    Text(_loadedPhotos[_loadedPhotos.length -1-index]['title']==null?_loadedPhotos[_loadedPhotos.length -1-index]['title'].toString():_loadedPhotos[_loadedPhotos.length -1-index]['title'],
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 15,
                         )),
                     Row(
                       children: [
-                        LikeButton(
-                          circleColor: CircleColor(
-                              start: Color(0xff0e1313),
-                              end: Color(0xfff60e0e)),
-                          bubblesColor: BubblesColor(
-                            dotPrimaryColor: Color(0xff33b5e5),
-                            dotSecondaryColor: Color(0xff000000),
-                          ),
-                          likeBuilder: (bool isLiked) {
-                            return Icon(
-                              _loadedPhotos[index]["IsLike"] != isLiked
-                                  ? Icons.favorite
-                                  : Icons.favorite_border_outlined,
+                        /*
+                            LikeButton(
+                              circleColor: CircleColor(
+                                  start: Color(0xff0e1313),
+                                  end: Color(0xfff60e0e)),
+                              bubblesColor: BubblesColor(
+                                dotPrimaryColor: Color(0xff33b5e5),
+                                dotSecondaryColor: Color(0xff000000),
+                              ),
+                              likeBuilder: (bool isLiked) {
+                                return Icon(
+                                  _loadedPhotos[index]["IsLike"] != isLiked
+                                      ? Icons.favorite
+                                      : Icons.favorite_border_outlined,
 
-                              color: _loadedPhotos[index]["IsLike"] != isLiked
-                                  ? Colors.red
-                                  : Colors.white,
-                              size: 30,
-                            );
-                          },
+                                  color: _loadedPhotos[index]["IsLike"] != isLiked
+                                      ? Colors.red
+                                      : Colors.white,
+                                  size: 30,
+                                );
+                              },
 
-                          size: 33,
-                          likeCount: _loadedPhotos[index]["likes"],
-                          onTap: (isLiked) {
-                            return onLikeButtonTapped(
-                              isLiked,_loadedPhotos[index]["id"],
-                            );
-                          },
+                              size: 33,
+                              likeCount:_loadedPhotos[index]["likes"],
 
-                        ),
+                              onTap: (isLiked) {
+                                return onLikeButtonTapped(
+                                  isLiked,_loadedPhotos[index]["id"],
+                                );
+                              },
+                            ),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            IconButton(
+                              highlightColor:Color.fromRGBO(1, 4, 30, 1),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          comment(_loadedPhotos[index]["id"],id,email,paswrd)),
+                                );
 
-                        // Text(_rateCount.toString(),style: TextStyle(color: Colors.white),),
+                              },
+                              icon: Icon(
+                                Icons.comment_outlined,
+                                size: 30,
+                              ),
+                              color: Colors.white,
+                            ),
 
-                        SizedBox(
-                          width: 15,
-                        ),
-                        IconButton(
-                          highlightColor:Color.fromRGBO(1, 4, 30, 1),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      comment(_loadedPhotos[index]["id"],id)),
-                            );
-                          },
-                          icon: Icon(
-                            Icons.comment_outlined,
-                            size: 30,
-                          ),
-                          color: Colors.white,
-                        ),
+                            */
+                        number_like(_loadedPhotos[_loadedPhotos.length -1-index]["post_id"],id,email,paswrd,_loadedPhotos[_loadedPhotos.length -1-index]["IsLike"],_loadedPhotos[_loadedPhotos.length -1-index]["likes"]),
                       ],
                     ),
                     Row(
                       children:
                       [
-                        SizedBox(width: 5),
+                        SizedBox(width: 5,height: 15,),
+                      //  convertToAgo
+                        
                         Text(
-                          _loadedPhotos[index]["time"],
+                          _loadedPhotos[_loadedPhotos.length -1-index]["time"],
                           style:TextStyle(color: Colors.white54, fontSize: 10),
                         ),
                       ],
@@ -753,7 +773,9 @@ class _homeState extends State<home> {
               .size
               .height * 0.3,
           decoration: BoxDecoration(
-              color: Color.fromRGBO(1, 4, 30, 1),
+              color: Color
+                  .fromRGBO(15, 3,
+                  50, 1.0),
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))
           ),
@@ -827,3 +849,150 @@ class _homeState extends State<home> {
     return subject[_realPosition];
   }
 }
+class number_like extends StatefulWidget {
+  late int id;
+  late int myid;
+  late String email;
+  late String pasword;
+  late bool like;
+  late int number_lik;
+  number_like(int id2, int myids, String emails, String peas,bool liks,int number_like2){
+    id=id2;
+    myid=myids;
+    email=emails;
+    pasword=peas;
+    like=liks;
+    number_lik=number_like2;
+  }
+
+  @override
+  State<number_like> createState() => _PostState(id,myid,email,pasword,like,number_lik);
+}
+
+class _PostState extends State<number_like> {
+  late int id;
+  late int myid;
+  late String email;
+  late String pasword;
+  late bool like;
+  late int number_lik;
+  _PostState(int id2, int myids, String emails, String peas,bool liks,int number_like2){
+    id=id2;
+    myid=myids;
+    email=emails;
+    pasword=peas;
+    like=liks;
+    number_lik=number_like2;
+  }
+
+  var i = 0;
+  bool likeee=false;
+  List apilike=[];
+  void likes(var index) async {
+    var response = await http.get(Uri.parse("http://192.168.100.42:2000/like?post_id="+index.toString()+"&email="+email+"&password="+pasword));
+
+    var jsondata = jsonDecode(response.body);
+
+    setState(() {
+      apilike = jsondata;
+      print("hhh");
+    });
+
+  }
+
+  String k_m_b_generator(num) {
+    if (num > 999 && num < 99999) {
+      return "${(num / 1000).toStringAsFixed(1)} K";
+    } else if (num > 99999 && num < 999999) {
+      return "${(num / 1000).toStringAsFixed(0)} K";
+    } else if (num > 999999 && num < 999999999) {
+      return "${(num / 1000000).toStringAsFixed(1)} M";
+    } else if (num > 999999999) {
+      return "${(num / 1000000000).toStringAsFixed(1)} B";
+    } else {
+      return num.toString();
+    }
+  }
+
+  String k_m_b_generator22(num) {
+    if(num > 999 && num < 99999){
+      return "${(num / 1000)}";
+    }
+    return num.toString();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        children: [
+          Row(
+            children: [
+
+              IconButton(
+                onPressed: (){
+
+                  setState((){
+
+                    if(like!=likeee) {
+
+                      likeee=!likeee;
+                      number_lik--;
+                      likes(id);
+                      print(id);
+                    } else {
+                      likeee=!likeee;
+                      likes(id);
+                      number_lik++;
+                      print(id);
+
+
+                    }
+
+                  });
+
+                },
+                icon:likeee!=like?Icon(Icons.favorite,size: 30,color: Colors.red,):Icon(Icons.favorite_border,size: 30,color: Colors.white,),
+                splashRadius: 0.1,
+              ),
+              IconButton(
+
+                highlightColor:Color.fromRGBO(1, 4, 30, 1),
+                onPressed: () {
+
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>comment(id,myid,email,pasword)),
+
+                  );
+
+
+                },
+                icon:const Icon(
+                  Icons.comment_outlined,
+                  size: 30,
+                ),
+                splashRadius: 0.5,
+                color: Colors.white,
+              ),
+            ],
+          ),
+
+          Row(
+            children: [
+              SizedBox(width: 5,),
+              Text(k_m_b_generator(number_lik),style: TextStyle(color: Colors.white,fontWeight:FontWeight.bold )),
+              SizedBox(width: 2,),
+              Text("likes",style:const TextStyle(fontSize: 16,color: Colors.white,fontWeight:FontWeight.bold )),
+            ],
+          ),
+
+        ],
+      ),
+    );
+  }
+}
+

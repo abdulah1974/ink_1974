@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:ink/home.dart';
@@ -62,6 +61,15 @@ class _ButtonState extends State<Button> {
       return prefs.getString('Email') ?? "";
     });
 
+    _counter = _prefs.then((SharedPreferences prefs) {
+      print("c:"+ prefs.getString('password').toString());
+      return prefs.getString('password') ?? "";
+    });
+
+    _counter = _prefs.then((SharedPreferences prefs) {
+      print("c:"+ prefs.getInt('id').toString());
+      return prefs.getInt('id').toString();
+    });
     print(emails);
     cc();
     _widgetOptions1=_widgetOptions1 = <Widget>[

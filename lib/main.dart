@@ -1,19 +1,20 @@
 import 'dart:convert';
+import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ink/singup.dart';
 import 'package:http/http.dart' as http;
 import 'Button.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:flutter_mentions/flutter_mentions.dart';
 void main()async{
 
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var email = prefs.getString('Email');
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home:email==null? MyApp():Button(2,"abdullah@gmail.com","abd"),));
+  var password = prefs.getString('password');
+  var id=prefs.getInt("id");
+  runApp(MaterialApp( builder: (_, child) => Portal(child: child!),  debugShowCheckedModeBanner: false,home:email==null? MyApp():Button(id!,email,password.toString()),));
+
 }
 
 class MyApp extends StatelessWidget {
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(primarySwatch: Colors.blueGrey),
@@ -43,7 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
-
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  late Future<String> _counter;
 
 late int id;
 List _login = [];
@@ -65,6 +68,7 @@ void login() async {
       } else {
 
         _incrementCounter();
+        id=_login[i]["id"];
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -72,6 +76,7 @@ void login() async {
           ),
               (route) => false,
         );
+
       }
     }
 
@@ -79,14 +84,17 @@ void login() async {
   });
 }
 
-final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-late Future<String> _counter;
-
 Future<void> _incrementCounter() async {
   final SharedPreferences prefs = await _prefs;
 
   setState(() {
     _counter = prefs.setString('Email', Email.text).then((bool success) {
+      return _counter;
+    });
+    _counter = prefs.setString('password', Email.text).then((bool success) {
+      return _counter;
+    });
+    _counter = prefs.setInt('id', id).then((bool success) {
       return _counter;
     });
   });

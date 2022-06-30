@@ -1,6 +1,5 @@
 import 'dart:convert';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -8,8 +7,7 @@ import 'package:http/http.dart' as http3;
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart' as http1;
 import 'package:http/http.dart' as http2;
-
-import 'account.dart';
+import 'package:another_flushbar/flushbar.dart';
 class edit_profile extends StatefulWidget {
 
   late  int id;
@@ -102,12 +100,14 @@ class _edit_profileState extends State<edit_profile> {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
         img=false;
-        cropImage();
+      //  cropImage();
       } else {
 
       }
     });
   }
+
+  /*
   cropImage() async {
     File? croppedFile = (await ImageCropper().cropImage(
         sourcePath: _image.path,
@@ -145,6 +145,10 @@ class _edit_profileState extends State<edit_profile> {
       });
     }
   }
+
+   */
+
+
 
 
 
@@ -229,12 +233,12 @@ class _edit_profileState extends State<edit_profile> {
 
 
 
-                SizedBox(width: 165,),
+                SizedBox(width: 164,),
 
 
 
                 IconButton(onPressed: (){
-             Navigator.pop(context);
+
 
                 if(bio.text=="")
                   {
@@ -243,9 +247,26 @@ class _edit_profileState extends State<edit_profile> {
                   edit_pio();
                   }
 
+             if(username.text==""&&bio.text==""){
+
+               Flushbar(
+                 margin: EdgeInsets.all(50),
+                 borderRadius: BorderRadius.circular(8),
+                 message:'You have to enter text',
+                 backgroundColor: Colors.red,
+                 duration: Duration(seconds: 3),
+               ).show(context);
+
+             }else{
+               print("hh");
+               Navigator.pop(context);
+             }
+
+
+
                  upload(_image);
                  if(username.text==""){
-                   print("den");
+                   print("den2");
                  }else{
                    update_usernam();
                  }
@@ -349,6 +370,11 @@ class _edit_profileState extends State<edit_profile> {
                   SizedBox(height: 22,),
                   Container(
                     child:TextFormField(
+                      inputFormatters: [
+                     FilteringTextInputFormatter.allow(RegExp('[a-z_0-9]')),
+
+
+                      ],
                       controller: username,
                       maxLength: 30,
                     ///  onChanged: (text) => setState(() => text),
@@ -366,7 +392,7 @@ class _edit_profileState extends State<edit_profile> {
                         contentPadding: EdgeInsets.fromLTRB(20.0, 3.0, 23.0, 12.0),
                         border:OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                       ///  errorText: _errorText,
-
+                        focusedBorder: myfocusborder(),
 
                       ),
                     ),
@@ -376,23 +402,32 @@ class _edit_profileState extends State<edit_profile> {
                   SizedBox(height: 10,),
                   Container(
                     child:TextFormField(
-                     controller: bio,
+
+                      controller: bio,
                ///     initialValue: pip[0]["bio"],
                       maxLength: 200,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+
+
                       ),
+
                       decoration: InputDecoration(
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
+
+
                         labelStyle: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black),
 
                         hintText: 'Bio',
                         contentPadding: EdgeInsets.fromLTRB(20.0, 3.0, 23.0, 12.0),
-                        border:OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+                        border:OutlineInputBorder(borderRadius: BorderRadius.circular(8.0),
 
+
+                        ),
+                        focusedBorder: myfocusborder(),
                       ),
+
                     ),
                     width: 300,
 
@@ -430,4 +465,12 @@ class _edit_profileState extends State<edit_profile> {
     return subject[_realPosition];
   }
 }
-
+OutlineInputBorder myfocusborder(){
+  return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10.0),
+      borderSide: BorderSide(
+        color:Colors.black,
+        width: 3,
+      )
+  );
+}

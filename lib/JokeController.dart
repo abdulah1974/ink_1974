@@ -39,9 +39,7 @@ class JokeController extends GetxController {
       isLoading(true);
       var jokes = await repo.getJokes();
 
-      if(jokes != null) {
-        allJokes.value = jokes;
-      }
+      allJokes.value = jokes;
 
     }catch(e) {
       isError(true);
@@ -54,9 +52,7 @@ class JokeController extends GetxController {
       isLoading(true);
 
       var joke= await repo.getJokes2();
-      if(joke != null) {
-        allJokes2.value = joke;
-      }
+      allJokes2.value = joke;
     }catch(e) {
       isError(true);
     }finally {

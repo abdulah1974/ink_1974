@@ -1,43 +1,48 @@
 import 'dart:convert';
-import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
+import 'package:get/get.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http4;
+import 'package:another_flushbar/flushbar.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:ink/Button.dart';
+import 'package:ink/favorite.dart';
+import 'package:ink/main.dart';
 class add_post extends StatefulWidget {
   const add_post({Key? key}) : super(key: key);
 
   @override
   _accountState createState() => _accountState();
-}
+ }
 
-class _accountState extends State<add_post> {
+class _accountState extends State<add_post>  with SingleTickerProviderStateMixin{
   TextEditingController textarea = TextEditingController();
   bool isLocked=true;
   int data=0;
-  File? _imageFile=null;
+  XFile? _pickedFile;
+  CroppedFile? _croppedFile;
 
-  ///NOTE: Only supported on Android & iOS
-  ///Needs image_picker plugin {https://pub.dev/packages/image_picker}
-  final picker = ImagePicker();
-
-  Future<void> getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-    setState(() {
-      _imageFile = File(pickedFile!.path);
-      cropImage();
-
-    });
+  Future<void> _uploadImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _pickedFile = pickedFile;
+        _cropImage();
+      });
+    }
   }
 
 
-  cropImage() async {
-    File? croppedFile = (await ImageCropper().cropImage(
-        sourcePath: _imageFile!.path,
+
+  Future<void> _cropImage() async {
+    print("kll");
+    if (_pickedFile != null) {
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: _pickedFile!.path,
+        compressFormat: ImageCompressFormat.jpg,
+        compressQuality: 100,
 
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -47,30 +52,33 @@ class _accountState extends State<add_post> {
           CropAspectRatioPreset.ratio16x9,
 
 
+
         ],
-        androidUiSettings:const AndroidUiSettings(
-          cropFrameColor:  Color.fromRGBO(1, 4, 30, 1),
-          dimmedLayerColor:  Color.fromRGBO(1, 4, 30, 1),
-          backgroundColor: Color.fromRGBO(1, 4, 30, 1),
-          toolbarTitle: 'Post',
-          toolbarColor: Color.fromRGBO(1, 4, 30, 1),
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.ratio7x5,
-          hideBottomControls: true,
-          lockAspectRatio: true,
-          showCropGrid: false,
+        uiSettings: [
+            AndroidUiSettings(
+              cropFrameColor: Color.fromRGBO(1, 4, 30, 1),
+              dimmedLayerColor: Color.fromRGBO(1, 4, 30, 1),
+              backgroundColor: Color.fromRGBO(1, 4, 30, 1),
+              toolbarTitle: 'Post',
+              toolbarColor: Color.fromRGBO(1, 4, 30, 1),
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.ratio7x5,
+              hideBottomControls: true,
+              lockAspectRatio: true,
+              showCropGrid: false,
+            ),
+          ]
+      );
 
-
-
-        )));
-    if (croppedFile != null) {
-      setState(() {
-        _imageFile = croppedFile;
-
-      });
+      if (croppedFile != null) {
+        setState(() {
+          _croppedFile = croppedFile;
+          print("_imageFile");
+        });
+      }
     }
-  }
 
+  }
   enableButton() {
     setState(() {
       isLocked = true;
@@ -79,9 +87,11 @@ class _accountState extends State<add_post> {
   @override
   void initState() {
    enableButton();
+   _tabController = TabController(vsync: this, length: myTabs.length);
+   _tabController.addListener(_handleTabSelection);
     super.initState();
-  }
 
+  }
 
   upload(File imageFile) async {
     var stream =
@@ -89,7 +99,7 @@ class _accountState extends State<add_post> {
 
     var length = await imageFile.length();
 
-    var uri = Uri.parse("http://192.168.100.42:2000/postimg?email=abdullah@gmail.com&password=abd");
+    var uri = Uri.parse("http://192.168.100.42:2000/postimg?email=ink@gmail.com&password=ink");
 
     var request = new http.MultipartRequest("POST", uri);
     var multipartFile = new http.MultipartFile('recfile', stream, length,
@@ -101,28 +111,102 @@ class _accountState extends State<add_post> {
       print(value);
     });
   }
+  int _currentIndex = 0;
+  final List<Tab> myTabs = <Tab>[
+    Tab(icon: Icon(Icons.image,),),
+    Tab(icon: Icon(Icons.text_fields,),),
+  ];
+  late TabController _tabController;
+
+
+   BottomNavigationBar? navigationBar;
+  List titel_post =[];
+  Future<void>  titel() async {
+
+    var response = await http4.get(Uri.parse("http://192.168.100.42:2000/post10?email=abdullah@gmail.com&password=aaaa&title="+textarea.text),);
+
+    var json = jsonDecode(response.body);
+
+    titel_post = json;
+
+
+  }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
+
       child: Scaffold(
         backgroundColor: Color.fromRGBO(1, 4, 30, 1),
         appBar: AppBar(
+
           backgroundColor: Color.fromRGBO(1, 4, 30, 1),
           title: Text(
             'Post',
           ),
           centerTitle: true,
+          actions: [
+            _currentIndex == 0
+                ?IconButton(
+                    onPressed: () {
+                      setState(() {
+                        if(_croppedFile!=null){
+                          upload(File(_croppedFile!.path));
+                          _croppedFile = null;
+
+                        }
+
+                      });
+                      print("1");
+                    },
+                    icon:_croppedFile!=null?Icon(Icons.add_task,):Icon(null),
+
+
+                    splashRadius: 20,
+                  )
+                : IconButton(
+                    onPressed: () {
+                      if(textarea.text!=""){
+                        print("2");
+                        titel();
+                        textarea.clear();
+                      }else{
+                        Flushbar(
+                          margin: EdgeInsets.all(50),
+                          borderRadius: BorderRadius.circular(8),
+                          message:'You have to enter text',
+                          backgroundColor: Colors.red,
+                          duration: Duration(seconds: 3),
+                        ).show(context);
+
+                      }
+
+                    },
+                    icon: Icon(
+                      Icons.add_task,
+                    ),
+                    splashRadius: 20,
+                  ),
+          ],
         ),
         body: Column(
+
           children: <Widget>[
             SizedBox(
               height: 50,
+
               child: AppBar(
+
                 backgroundColor: Color.fromRGBO(1, 4, 30, 1),
                 bottom: TabBar(
+
+                  indicatorColor: Colors.white,
+                  controller: _tabController,
+
+
                   tabs: [
+
                     Tab(
                       icon: Icon(Icons.image),
                     ),
@@ -131,16 +215,18 @@ class _accountState extends State<add_post> {
                         Icons.text_fields,
                       ),
                     ),
+
                   ],
+
                 ),
               ),
             ),
 
-            // create widgets for each tab bar here
-
             Expanded(
               child: TabBarView(
+               controller:_tabController,
                 physics: BouncingScrollPhysics(),
+
                 children: [
                   // first tab bar view widget
                   Scaffold(
@@ -152,12 +238,8 @@ class _accountState extends State<add_post> {
                           margin: const EdgeInsets.only(top: 80),
                           child: Column(
                             children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Center(
 
-                                ),
-                              ),
+
                               SizedBox(height: 15),
                               Expanded(
                                 child:  Container(
@@ -169,7 +251,7 @@ class _accountState extends State<add_post> {
                                     children: [
                                       ClipRRect(
 
-                                          child: _imageFile != null
+                                          child: _croppedFile != null
                                               ? Column(
                                             children: [
 
@@ -181,7 +263,7 @@ class _accountState extends State<add_post> {
                                                     height: 300,
 
                                                     child: Center(
-                                                      child: Image.file(_imageFile!),
+                                                      child: Image.file(File(_croppedFile!.path)),
                                                     ),
                                                   ),
                                                   Row(
@@ -194,8 +276,22 @@ class _accountState extends State<add_post> {
                                                           size: 25,
                                                         ),
                                                         onTap: (){
+
                                                           setState(() {
-                                                            _imageFile = null;
+                                                            _croppedFile = null;
+
+
+
+                                                          //  navigationBar!.onTap!(1);
+
+                                                           // navigationBar!.onTap!(0);
+
+                                                           // scakey.currentState!._onItemTapped(1);
+
+
+
+
+
                                                           });
                                                         },
                                                       ),
@@ -206,11 +302,12 @@ class _accountState extends State<add_post> {
 
 
                                               SizedBox(height: 35,),
+                                              /*
                                               TextButton(
                                                 onPressed: () {
                                                   setState(() {
                                                     upload(_imageFile!);
-                                                    _imageFile = null;
+                                              _imageFile = null;
                                                   });
                                                 },
                                                 style: ButtonStyle(
@@ -226,6 +323,8 @@ class _accountState extends State<add_post> {
                                                         const TextStyle(fontSize: 25))),
                                                 child: Text("upload"),
                                               ),
+
+                                               */
                                             ],
                                           )
                                               : SizedBox(
@@ -239,7 +338,8 @@ class _accountState extends State<add_post> {
                                               size: 55,
                                             ),
                                             onTap: (){
-                                              getImage();
+                                              _uploadImage();
+                                            //  getImage();
                                             },
                                               ),
                                           ),
@@ -253,6 +353,7 @@ class _accountState extends State<add_post> {
 
                               ),
 
+
                             ],
                           ),
                         ),
@@ -260,37 +361,64 @@ class _accountState extends State<add_post> {
                     ),
                   ),
 
-                  // second tab bar viiew widget
+
+
+
                   TextField(
                     style: TextStyle(color: Colors.white),
                     controller: textarea,
                     keyboardType: TextInputType.multiline,
-                    maxLines: 7,
+                    maxLines: 27,
+                    cursorColor: Colors.white,
+                    cursorWidth: 1,
                     maxLength: 250,
+                    autofocus: false,
                     decoration: InputDecoration(
                       counterStyle: TextStyle(color: Colors.white),
-                      hintStyle: TextStyle(color: Colors.white),
+                      hintStyle: TextStyle(color: Colors.white60),
                       hintText: "What are you thinking?",
                       border: OutlineInputBorder(),
                       focusedBorder: OutlineInputBorder(
 
-                          borderSide:BorderSide(width: 1, color: Colors.white),
+                        borderSide:BorderSide(width: 1, color: Colors.transparent),
 
 
                       ),
 
                     ),
 
+
                   ),
+
 
                 ],
               ),
             ),
+
+
+
+
+
+
           ],
         ),
 
+
       ),
+
     );
+
   }
+
+  _handleTabSelection() {
+      setState(() {
+        _currentIndex = _tabController.index;
+      });
+
+  }
+
+
 }
+
+
 

@@ -1,17 +1,15 @@
 import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http3;
-class following extends StatefulWidget {
+class followinges extends StatefulWidget {
   int? id;
-  following(this.id);
+  followinges(this.id);
 
   @override
   _numberState createState() => _numberState(id);
 }
 
-class _numberState extends State<following> {
+class _numberState extends State<followinges> {
   int? id;
   _numberState(this.id);
 /// http://192.168.100.42:2000/getfollower?fan_id=1
@@ -40,6 +38,15 @@ class _numberState extends State<following> {
     return Scaffold(
         backgroundColor: Color.fromRGBO(1, 4, 30, 1),
       appBar: AppBar(
+        leading:IconButton(
+        splashRadius: 20,
+        //     highlightColor: Colors.transparent,
+        //     splashColor: Colors.transparent,
+        icon:Icon(Icons.arrow_back,size: 30), onPressed: () {
+        Navigator.pop(context);
+
+           },
+        ),
         backgroundColor: Color.fromRGBO(1, 4, 30, 1),
         title: Text("Following"),
       ),
