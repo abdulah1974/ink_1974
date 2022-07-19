@@ -42,6 +42,9 @@ class _ButtonState extends State<Button> {
     print("myid"+id.toString());
   }
 
+  final _selectedItemColor = Colors.red;
+  final _unselectedItemColor = Colors.black;
+
 
   int _currentIndex=0;
 
@@ -82,7 +85,27 @@ class _ButtonState extends State<Button> {
     ];
   }
 
+  Widget _buildIcon(IconData iconData,  int index) => Container(
 
+    width: double.infinity,
+    height: kBottomNavigationBarHeight,
+    child: Material(
+        //color:Colors.black,
+      child: InkWell(
+          splashColor: Colors.transparent,
+
+          child: Container(
+            height: double.infinity,
+            color: Color.fromRGBO(1, 4, 30, 1),
+            child:Icon(iconData,size: 30,color:index==_currentIndex?Colors.white:Colors.white60,),
+
+          ),
+
+      ),
+
+    ),
+
+  );
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,7 +113,51 @@ class _ButtonState extends State<Button> {
       body: Center(
         child: _widgetOptions1.elementAt(_currentIndex),
       ),
-      bottomNavigationBar: _buildNotificationBadge(),
+      bottomNavigationBar: BottomNavigationBar(
+      selectedFontSize: 0,
+
+      items: <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: _buildIcon(Icons.home, 0),
+          label: "",
+        ),
+        BottomNavigationBarItem(
+          icon: _buildIcon(Icons.search,  1,),
+          label: "",
+        ),
+        BottomNavigationBarItem(
+          icon: _buildIcon(Icons.add_circle_outline_sharp, 2),
+          label: "",
+
+
+        ),
+        BottomNavigationBarItem(
+          icon: _buildIcon(Icons.favorite, 3),
+          label: "",
+
+        ),
+        BottomNavigationBarItem(
+          icon: _buildIcon(Icons.account_circle_outlined, 4),
+          label: "",
+
+        ),
+      ],
+      backgroundColor:  Color.fromRGBO(1, 4, 30, 1),
+      currentIndex: _currentIndex,
+      selectedItemColor: _selectedItemColor,
+      unselectedItemColor: _unselectedItemColor,
+
+        elevation: 15,
+      type: BottomNavigationBarType.fixed,
+
+        onTap: (index) {
+          setState(() {
+            _currentIndex=index;
+
+          });
+        },
+
+    ),
     );
 
   }
@@ -133,6 +200,7 @@ class _ButtonState extends State<Button> {
           icon: Icon(Icons.account_circle_outlined,size: 30,),
 
         ),
+
       ],
         currentIndex:_currentIndex,
       onTap: (index) {

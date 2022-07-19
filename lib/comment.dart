@@ -63,7 +63,8 @@ class _commentState extends State<comment> {
 
   void addItemToList(){
     setState(() {
-   comment1();
+      //يضيف تعليق
+  // comment1();
 
 
     });
@@ -118,6 +119,7 @@ class _commentState extends State<comment> {
 
     });
   }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -126,9 +128,11 @@ class _commentState extends State<comment> {
     aa();
     print("myid:"+myid.toString());
     getr();
-    print(id);
+
+    print("id_post:"+id.toString());
     print(email);
     print(pasword);
+
 
     //String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
 
@@ -164,14 +168,34 @@ class _commentState extends State<comment> {
 
     setState(() {
       rows = json;
+      for(int s=0;s<rows.length;s++){
+
+
+
+
+        // add_mention(post_id, myid);
+
+      }
 
 
 
 
     });
   }
+  List list_mention=[];
+  void add_mention(var post_id,var user_id,) async {
+    var response = await http3.get(Uri.parse("http://192.168.100.42:2000/add_mention?post_id=$post_id&user_id=$user_id&email=abdullah@gmail.com&password=123456"),);
 
+    var json = jsonDecode(response.body);
+
+    setState(() {
+
+      list_mention = json;
+
+    });
+  }
   List _list=[];
+  List dd=[];
 
   void search4(var i) async {
     var response = await http2.get(Uri.parse("http://192.168.100.42:2000/serch_mention2?username="+i+"&id="+myid.toString()),);
@@ -181,11 +205,14 @@ class _commentState extends State<comment> {
     setState(() {
       _list = json;
       for(int s=0;s<_list.length;s++){
+      //  _string=_list[s]["username"].toString();
+      //  dd.add(_string);
 
-        print(_list[s]["id"]);
-        // print(aa);
 
       }
+
+
+    //  add_mention(xxx[i].toString(), 6);
 
     });
   }
@@ -197,25 +224,33 @@ class _commentState extends State<comment> {
 
     setState(() {
       pus = json;
+
+
+
       for(int s=0;s<pus.length;s++){
 
         print(pus[s]["id"]);
+
         // print(aa);
           if(pus[s]["myid"]!=true){
-            Navigator.push(context,MaterialPageRoute(builder: (context)  =>   users(pus[s]["id"],myid,email,pasword)));
+          //  Navigator.push(context,MaterialPageRoute(builder: (context)  =>   users(pus[s]["id"],myid,email,pasword)));
           }
 
       }
     });
   }
+  void lllll(var i){
+    dd.add(i);
+  }
  // var nows = new DateTime.now();
   GlobalKey<FlutterMentionsState> key = GlobalKey<FlutterMentionsState>();
   String? search_;
   String? text;
-  var _string;
+  List _string=[""];
   List remiv_list=[];
  bool bo=false;
   List<int> selectedIndexList =[];
+
   @override
   Widget build(BuildContext context) {
 
@@ -303,103 +338,106 @@ class _commentState extends State<comment> {
             child: postComment(),
           ),
           Align(
-            alignment: Alignment.bottomLeft,
-            child: Container(
-              padding: EdgeInsets.only(left: 10,bottom: 10,top: 10),
-              height: 55,
-              width: double.infinity,
-              color:  Color.fromRGBO(1, 4, 30, 1),
-              child: Row(
-                children: <Widget>[
+            alignment: Alignment.bottomCenter,
+            child:  Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                for(int i=0;i<user.length;i++)
+                Container(
+                  padding: EdgeInsets.all(10),
+                  child:user[i]["profile_photo"]==null?
+
                   Container(
+                    child: Center(child: Text(charAt(user[i]["username"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),),
                     width: 35,
-                    child:ListView.builder(
-                       physics: NeverScrollableScrollPhysics(),
-                       itemCount: user.length,
-                        itemBuilder:(_,index){
-                          return  Container(
+                    height: 35,
 
-                            child:Center(
-                              child:Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      shape: BoxShape.circle,
 
-                                child: Center(
-                                  child:user[index]["profile_photo"]==null?
+                    ),
 
-                                  Container(
-                                    child: Center(child: Text(charAt(user[index]["username"].toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),),
-                                    width: 35,
-                                    height: 35,
+                  ):Container(
 
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      shape: BoxShape.circle,
+                    child:Container(
 
-                                    ),
+                      width: 35,
+                      height: 35,
 
-                                  ):Center(
+                      decoration: BoxDecoration(
 
-                                      child:Container(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
 
-                                        width: 35,
-                                        height: 35,
+                          fit: BoxFit.cover,
 
-                                        decoration: BoxDecoration(
-
-                                          shape: BoxShape.circle,
-                                          image: DecorationImage(
-
-                                            fit: BoxFit.cover,
-
-                                            image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+user[index]["profile_photo"],),
+                          image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+user[i]["profile_photo"],),
 
 
-                                          ),
+                        ),
 
-                                        ),
+                      ),
 
-                                      ),
-                                  ),
-                                ),
-
-
-                              ),
-                            ),
-                          );
-                        }),
+                    ),
                   ),
-                  Expanded(
+                ),
+                Expanded(
 
-                    child: FlutterMentions(
+                  child: FlutterMentions(
 
-                      suggestionPosition: SuggestionPosition.Top,
+                     minLines: 1,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: 5,
 
-                      key: key,
 
-                      onChanged: (v){
-                        text=v;
-                        if(key.currentState!.controller!.text==""){
+                    suggestionPosition: SuggestionPosition.Top,
 
-                          remiv_list.clear();
-                        }
+                    key: key,
 
-                      },
-                      onSearchChanged: (_,v){
-                        _string=v;
+                    onChanged: (v){
+                      text=v;
+                      if(key.currentState!.controller!.text==""){
 
-                         search();
+                        remiv_list.clear();
 
-                        remiv_list.removeWhere((item) => item == v);
 
-                      },
-
-                      onMentionAdd: (s){
-                        text=s["display"];
-                        _string=s["display"];
+                      }
 
 
 
-                      },
-                      /*
+                    },
+                    onSearchChanged: (_,v){
+                      for(int i=0;i<_string.length;i++){
+                        _string[i]=v;
+
+                      }
+
+
+                      search4(v);
+
+
+
+
+
+                      //dd.remove(v);
+
+                      //  dd.removeWhere((item) => item == v);
+                      search();
+
+                      //  remiv_list.removeWhere((item) => item == v);
+
+
+                    },
+
+                    onMentionAdd: (s){
+                      text=s["display"];
+                      // _string=s["display"].toString();
+                      search4(s["display"].toString());
+
+
+                    },
+                    /*
               onSuggestionVisibleChanged: (b){
                 boolen=b;
 
@@ -421,86 +459,84 @@ class _commentState extends State<comment> {
               },
               */
 
-                      cursorColor: Colors.white,
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                          contentPadding: EdgeInsets.all(10),
-
-
-                          hintText: "Write comment...",
-                          hintStyle: TextStyle(color: Colors.white),
-                          border: InputBorder.none
-                      ),
-
-                      mentions: [
-
-                        Mention(
-
-
-                            trigger: '@',
-                            style:const TextStyle(
-                              color: Colors.blue,
-                            ),
-
-                            data: [
-                              for(int i=0;i<rows.length;i++)
-                                {
-                                  'id': '61as61fsa',
-                                  'display':rows[i]["username"],
-                                  'full_name': rows[i]["bio"]??"",
-                                  "imag": rows[i]["profile_photo"]??"",
-
-                                },
-                            ],
-
-                            matchAll: false,
-
-
-                            suggestionBuilder: (data) {
-
-                              search_==data["full_name"];
-
-
-                              return Container(
-
-                                 color: Colors.black,
-                                padding: EdgeInsets.all(10),
-                                child: Row(
-
-                                  children: <Widget>[
-                                    const SizedBox(
-                                      width: 15,
-                                    ),
-                                    CircleAvatar(
-                                      backgroundImage: NetworkImage(
-                                        "http://192.168.100.42:2000/get_trnd2_image?path=" +data["imag"],
-
-                                      ),
-                                      backgroundColor: Colors.white,
-                                    ),
-                                    const SizedBox(
-                                      width: 15,
-                                    ),
-                                    Column(
-
-                                      children: <Widget>[
-                                        Text(data['full_name'],style: TextStyle(color: Colors.white),),
-                                        Text(data['display'],style: TextStyle(color: Colors.white24),),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }),
-
-
-                      ],
+                    cursorColor: Colors.white,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(10),
+                        hintText: "Write comment...",
+                        hintStyle: TextStyle(color: Colors.white),
+                        border: InputBorder.none
                     ),
 
+                    mentions: [
+
+                      Mention(
+
+
+                          trigger: '@',
+                          style:const TextStyle(
+                            color: Colors.blue,
+                          ),
+
+                          data: [
+                            for(int i=0;i<rows.length;i++)
+                              {
+                                'id': '61as61fsa',
+                                'display':rows[i]["username"],
+                                'full_name': rows[i]["bio"]??"",
+                                "imag": rows[i]["profile_photo"]??"",
+
+                              },
+                          ],
+
+                          matchAll: false,
+
+
+                          suggestionBuilder: (data) {
+
+                            search_==data["full_name"];
+
+
+                            return Container(
+
+                              color: Colors.black,
+                              padding: EdgeInsets.all(10),
+                              child: Row(
+
+                                children: <Widget>[
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                      "http://192.168.100.42:2000/get_trnd2_image?path=" +data["imag"],
+
+                                    ),
+                                    backgroundColor: Colors.white,
+                                  ),
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  Column(
+
+                                    children: <Widget>[
+                                      Text(data['full_name'],style: TextStyle(color: Colors.white),),
+                                      Text(data['display'],style: TextStyle(color: Colors.white24),),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+
+
+                    ],
                   ),
 
+                ),
 
-                  /*
+
+                /*
                   Expanded(
                     child: TextField(
                      // cursorWidth: 2,
@@ -521,14 +557,20 @@ class _commentState extends State<comment> {
                    */
 
 
-                  SizedBox(width: 15,),
-                  FloatingActionButton(
+
+                Container(
+                  padding: EdgeInsets.all(10),
+                  height: 57,
+                  width: 57,
+                  child:FloatingActionButton(
+
                     onPressed: (){
-                  ///
+                      ///
 
                       if(key.currentState!.controller!.text==""){
 
                       }else{
+                        //يضيف تعليق
                         addItemToList();
 
                       }
@@ -537,8 +579,10 @@ class _commentState extends State<comment> {
 
                         if(key.currentState!.controller!.text==""){
 
+
                           print("nn");
                         }else{
+
 
                           DateTime now = DateTime.now();
                           // print(convertToAgo(now));
@@ -548,12 +592,32 @@ class _commentState extends State<comment> {
 
                           key.currentState!.controller!.clear();
 
-                          remiv_list.add(_string);
-                          var distinctIds1 = remiv_list.toSet().toList();
-                          for(int s=0;s<distinctIds1.length;s++){
-                            search4(distinctIds1[s]);
+
+                          //
+
+                          for(int s=0;s<_string.length;s++){
+                            dd.add(_string[s].toString());
+                            // print(_string[s].toString());
+                            // _string.removeWhere((element) => true);
+                          }
+                          var distinctIds = dd.toSet().toList();
+                          for(int s=0;s<distinctIds.length;s++){
+
+                            print("xxxxx:"+distinctIds[s].toString());
+                            _string.removeWhere((element) => element==distinctIds[s].toString());
+                            //  dd.clear();
+
+
+                            //dd.clear();
+                            // dd.remove("1bd");
+                            //  push(distinctIds[s].toString());
+                            //  search4(distinctIds[s].toString());
+                            //   add_mention(id,distinctIds[s].toString());
 
                           }
+
+
+                          // _string.remove(_string[i].toString());
 
                         }
 
@@ -567,9 +631,10 @@ class _commentState extends State<comment> {
                     backgroundColor: Colors.white,
                     elevation: 0,
                   ),
-                ],
+                ),
 
-              ),
+              ],
+
             ),
           ),
         ],
@@ -585,7 +650,73 @@ class _commentState extends State<comment> {
         itemBuilder:(BuildContext context, int index){
 
           return ListTile(
+               leading: GestureDetector(
+                 behavior: HitTestBehavior.opaque,
+                 onTap: () {
+                   if(list[index].dlet!=true){
+                     Navigator.push(context,MaterialPageRoute(builder: (context)  =>   users(_loadedPhotos[index]["id"],myid,email,pasword)));
+                   }
+                 },
+                 child:  Container(
 
+                   width: 48,
+                   height: 48,
+                   padding: EdgeInsets.symmetric(vertical: 4.0),
+                   alignment: Alignment.center,
+                   child: Container(
+
+                     child:Center(
+                       child:Container(
+
+                         child: Center(
+                           child:list[index].profile_photo==null?
+
+                           Container(
+                             child: Center(
+                               child:Text(charAt(list[index].usename.toString().toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
+
+                             ),
+                             width: 38,
+                             height: 38,
+                             decoration: BoxDecoration(
+                               color: Colors.blue,
+                               shape: BoxShape.circle,
+
+
+                             ),
+
+                           ):Center(
+
+                             child:Container(
+
+                               width: 38,
+                               height: 38,
+
+                               decoration: BoxDecoration(
+
+                                 shape: BoxShape.circle,
+                                 image: DecorationImage(
+
+                                   fit: BoxFit.cover,
+
+                                   image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+list[index].profile_photo.toString(),),
+
+
+                                 ),
+
+                               ),
+
+                             ),
+
+                           ),
+                         ),
+
+
+                       ),
+                     ),
+                   ),
+                 ),
+               ),
                title:Container(
                  child:Column(
                    children: [
@@ -593,68 +724,6 @@ class _commentState extends State<comment> {
                    Row(
                      children: [
 
-                       GestureDetector(
-                         onTap: (){
-                           if(list[index].dlet!=true){
-
-
-                            Navigator.push(context,MaterialPageRoute(builder: (context)  =>   users(_loadedPhotos[index]["id"],myid,email,pasword)));
-                           }
-                         },
-                         child:Container(
-
-                           child:Center(
-                             child:Container(
-
-                               child: Center(
-                                 child:list[index].profile_photo==null?
-
-                                 Container(
-                                   child: Center(
-                                     child:Text(charAt(list[index].usename.toString().toUpperCase(),0),style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
-
-                                     ),
-                                   width: 38,
-                                   height: 38,
-                                   decoration: BoxDecoration(
-                                     color: Colors.blue,
-                                     shape: BoxShape.circle,
-
-
-                                   ),
-
-                                 ):Center(
-
-                                     child:Container(
-
-                                       width: 38,
-                                       height: 38,
-
-                                       decoration: BoxDecoration(
-
-                                         shape: BoxShape.circle,
-                                         image: DecorationImage(
-
-                                           fit: BoxFit.cover,
-
-                                           image:NetworkImage("http://192.168.100.42:2000/get_trnd2_image?path="+list[index].profile_photo.toString(),),
-
-
-                                         ),
-
-                                       ),
-
-                                     ),
-
-                                 ),
-                               ),
-
-
-                             ),
-                           ),
-                         ),
-                       ),
-                       SizedBox(width: 3,),
                       GestureDetector(
                         onTap: (){
                           if(list[index].dlet!=true){
@@ -663,7 +732,6 @@ class _commentState extends State<comment> {
 
                         },
                         child:Container(
-                          height: 30,
                           child:Text(
                             list[index].usename.toString(),
                             style:TextStyle(color: Colors.white, fontSize: 13,fontWeight: FontWeight.bold),
@@ -779,7 +847,9 @@ class _commentState extends State<comment> {
               }
             });
            },
+
             subtitle:Column(
+
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
@@ -799,13 +869,13 @@ class _commentState extends State<comment> {
                     textStyle: TextStyle(color: Colors.white,fontSize: 16),
                     onTap: (link) {
                       var i=link.value!.substring(1);
-                        push(i);
+                      push(i);
 
                     },
                     //   showSnackbar("link pressed: ${link.value!}"),
                   ),
                 ),
-                SizedBox(height: 5,),
+                SizedBox(height: 1,),
                 Text(
                   list[index].tiem.toString(),
                   style:TextStyle(color: Colors.white54, fontSize: 10),
@@ -834,3 +904,4 @@ class _commentState extends State<comment> {
   }
 
 }
+

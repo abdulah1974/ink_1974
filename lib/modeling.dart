@@ -17,7 +17,8 @@ class modeiling<T> {
     String? visible_like;
     String? comment;
     String? title_comeent;
-  modeiling({this.title_comeent,this.comment, this.visible_like,this.title_mention,this.username, this.profile_photo, this.username2, this.profile_photo2,this.id, required this.IsLike, this.title,this.imageing,this.userid,this.private,this.time,this.time2,this.image_mention});
+    String? image_coment;
+  modeiling({this.image_coment,this.title_comeent,this.comment, this.visible_like,this.title_mention,this.username, this.profile_photo, this.username2, this.profile_photo2,this.id, required this.IsLike, this.title,this.imageing,this.userid,this.private,this.time,this.time2,this.image_mention});
 
 
 }

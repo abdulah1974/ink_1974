@@ -29,6 +29,7 @@ class _accountState extends State<add_post>  with SingleTickerProviderStateMixin
     if (pickedFile != null) {
       setState(() {
         _pickedFile = pickedFile;
+
         _cropImage();
       });
     }
@@ -99,7 +100,7 @@ class _accountState extends State<add_post>  with SingleTickerProviderStateMixin
 
     var length = await imageFile.length();
 
-    var uri = Uri.parse("http://192.168.100.42:2000/postimg?email=ink@gmail.com&password=ink");
+    var uri = Uri.parse("http://192.168.100.42:2000/postimg?email=abdullah@gmail.com&password=123456");
 
     var request = new http.MultipartRequest("POST", uri);
     var multipartFile = new http.MultipartFile('recfile', stream, length,
@@ -123,7 +124,7 @@ class _accountState extends State<add_post>  with SingleTickerProviderStateMixin
   List titel_post =[];
   Future<void>  titel() async {
 
-    var response = await http4.get(Uri.parse("http://192.168.100.42:2000/post10?email=abdullah@gmail.com&password=aaaa&title="+textarea.text),);
+    var response = await http4.get(Uri.parse("http://192.168.100.42:2000/post10?email=abdullah@gmail.com&password=123456&title="+textarea.text),);
 
     var json = jsonDecode(response.body);
 
@@ -155,10 +156,12 @@ class _accountState extends State<add_post>  with SingleTickerProviderStateMixin
                           upload(File(_croppedFile!.path));
                           _croppedFile = null;
 
+                        }else{
+                          print("1");
                         }
 
                       });
-                      print("1");
+
                     },
                     icon:_croppedFile!=null?Icon(Icons.add_task,):Icon(null),
 
@@ -268,35 +271,48 @@ class _accountState extends State<add_post>  with SingleTickerProviderStateMixin
                                                   ),
                                                   Row(
                                                     children: [
-                                                      SizedBox(width: 270,),
-                                                      InkWell(
-                                                        child:Icon(
-                                                          Icons.clear,
-                                                          color: Colors.white,
-                                                          size: 25,
+                                                      SizedBox(width: 267,),
+                                                      Container(
+                                                        width: 30,
+                                                        height: 30,
+                                                        decoration: new BoxDecoration(
+                                                          color: Color.fromRGBO(1, 4, 30, 1),
+                                                          shape: BoxShape.circle,
+
+
                                                         ),
-                                                        onTap: (){
+                                                        child: InkWell(
 
-                                                          setState(() {
-                                                            _croppedFile = null;
+                                                          child:Icon(
+                                                            Icons.clear,
 
+                                                            color: Colors.white,
+                                                            size: 25,
+                                                          ),
+                                                          onTap: (){
 
-
-                                                          //  navigationBar!.onTap!(1);
-
-                                                           // navigationBar!.onTap!(0);
-
-                                                           // scakey.currentState!._onItemTapped(1);
-
-
+                                                            setState(() {
+                                                              _croppedFile = null;
 
 
 
-                                                          });
-                                                        },
+                                                              //  navigationBar!.onTap!(1);
+
+                                                              // navigationBar!.onTap!(0);
+
+                                                              // scakey.currentState!._onItemTapped(1);
+
+
+
+
+
+                                                            });
+                                                          },
+                                                        ),
                                                       ),
                                                     ],
                                                   ),
+
                                                 ],
                                               ),
 

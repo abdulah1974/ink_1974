@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:get/get.dart';
 import 'package:ink/follow_requests.dart';
 import 'package:ink/modeling.dart';
 import 'package:ink/user.dart';
@@ -59,7 +60,7 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
           id: follow[i]["id"],
           userid: follow[i]["user_id"],
           time: follow[i]["time"],
-          time2: follow[i]["time2"]));
+          time2: follow[i]["time2"].toString()));
           print("GetFollower");
 
     }
@@ -67,31 +68,34 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
   }
 
   List like = [];
-  var zz;
+
   Future<void> getlike() async {
 
-    var response = await http3.get(
-      Uri.parse(
-          "http://192.168.100.42:2000/getMylikes?user_id=" + id.toString()),
-    );
-    var json = jsonDecode(response.body);
-    like = json;
+    var response = await http3.get(Uri.parse("http://192.168.100.42:2000/getMylikes?user_id=" + id.toString()),);
 
-    for (var i = 0; i < like.length; i++) {
-      _list.add(new modeiling(
-          username2: like[i]["username"],
-          profile_photo2: like[i]["profile_photo"],
-          IsLike: false,
-          imageing: like[i]["image"],
-          title: like[i]["title"],
-          time: like[i]["time"],
-          time2: like[i]["time2"]));
+     var json = jsonDecode(response.body);
+     like = json;
 
-    }
+      for (var i = 0; i < like.length; i++) {
+        _list.add(new modeiling(
+            IsLike: false,
+            username2: like[i]["username"],
+            profile_photo2: like[i]["profile_photo"],
+            imageing: like[i]["image"],
+            title: like[i]["title"],
+            time: like[i]["time"],
+            time2: like[i]["time2"].toString(),
+
+        ));
+
+      }
+
+
+
 
   }
 
-  late String amount;
+
 
 
 
@@ -133,7 +137,7 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
           image_mention: listmention[a]["image"],
           title_mention: listmention[a]["title"],
           time: listmention[a]["time"],
-          time2: listmention[a]["time2"],
+          time2: listmention[a]["time2"].toString(),
           visible_like:listmention[a]["fan_id"].toString(),
         ));
       //  print(listmention[a]["username"]);
@@ -145,99 +149,99 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
 
 
   }
-  Future<void>  asyncMethod3() async {
+  List get_comment = [];
+
+  Future<void> getcomment() async {
+    var response = await http6.get(Uri.parse("http://192.168.100.42:2000/get_notifications_comment?user_id="+id.toString()),);
+
+    var json = jsonDecode(response.body);
+    setState(() {
+      get_comment = json;
+
+       for (int i =0; i < get_comment.length; i++) {
+
+          _list.add(new modeiling(
+            IsLike: false,
+            username:get_comment[i]["username"],
+            profile_photo2: get_comment[i]["profile_photo"],
+            profile_photo: get_comment[i]["image"],
+            title_comeent: get_comment[i]["title"],
+            comment: get_comment[i]["comment"],
+            time: get_comment[i]["time"],
+            time2: get_comment[i]["time2"].toString(),
+            image_coment: get_comment[i]["image"],
+          ));
 
 
-    await  mention();
-    _list.sort((a, b) {
-      int aDate = DateTime.parse(b.time2 ?? '').microsecondsSinceEpoch;
-      int bDate = DateTime.parse(a.time2 ?? '').microsecondsSinceEpoch;
-      return aDate.compareTo(bDate);
+        }
+
+
     });
+  }
+
+  Future<String>  asyncmention() async {
+
+
+    await mention();
+    _list.sort((a, b) => b.time2!.compareTo(a.time2??''));
+      return "1";
+  }
+
+  Future<String> asyncfollower2() async {
+
+    await  follower();
+
+     _list.sort((a, b) => b.time2!.compareTo(a.time2??''));
+
+     return "2";
+  }
+
+
+
+  Future<String>  asyncgetlike() async {
+
+    await getlike();
+
+       _list.sort((a, b) => b.time2!.compareTo(a.time2??''));
+
+
+   return "3";
 
   }
 
-  Future<void> asyncMethod2() async {
+  Future<String>  asyncgetcomment() async {
 
-    await follower();
-
-    _list.sort((a, b) {
-      int aDate = DateTime.parse(b.time2 ?? '').microsecondsSinceEpoch;
-      int bDate = DateTime.parse(a.time2 ?? '').microsecondsSinceEpoch;
-      return aDate.compareTo(bDate);
-    });
-
-  }
-
-  Future<void>  asyncMethod1() async {
+      print("abdullah");
 
 
-    await  getlike();
-    _list.sort((a, b) {
-      int aDate = DateTime.parse(b.time2 ?? '').microsecondsSinceEpoch;
-      int bDate = DateTime.parse(a.time2 ?? '').microsecondsSinceEpoch;
-      return aDate.compareTo(bDate);
-    });
+      await  getcomment();
 
-  }
-
-  Future<void>  asyncMethod0() async {
+      _list.sort((a, b) => b.time2!.compareTo(a.time2??''));
 
 
-    await   getcomment();
-    _list.sort((a, b) {
-      int aDate = DateTime.parse(b.time2 ?? '').microsecondsSinceEpoch;
-      int bDate = DateTime.parse(a.time2 ?? '').microsecondsSinceEpoch;
-      return aDate.compareTo(bDate);
-    });
 
+
+
+    return "4";
   }
 
 
   @override
   void initState() {
     super.initState();
-    asyncMethod1();
-    asyncMethod2();
-    asyncMethod3();
+    asyncfollower2();
+    asyncgetcomment();
+    asyncmention();
+    asyncgetlike();
     get_private();
-    asyncMethod0();
+
 
     _arrowAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     _arrowAnimation = Tween(begin: 0.0, end: pi).animate(_arrowAnimationController);
+
   }
 
 
-  List get_comment = [];
-
-  Future<void> getcomment() async {
-    var response = await http6.get(Uri.parse("http://192.168.100.42:2000/get_notifications_comment?user_id=6"),);
-
-    var json = jsonDecode(response.body);
-    setState(() {
-      get_comment = json;
-      for (int i =0; i < get_comment.length; i++) {
-         print(get_comment[i]["comment"]);
-           _list.add(new modeiling(
-             IsLike: false,
-             username:get_comment[i]["username"],
-             profile_photo2: get_comment[i]["profile_photo"],
-             profile_photo: get_comment[i]["image"],
-             title_comeent: get_comment[i]["title"],
-             comment: get_comment[i]["comment"],
-             time: get_comment[i]["time"],
-             time2: get_comment[i]["time2"],
-
-           ));
-           //  print(listmention[a]["username"]);
-
-
-           print("mention");
-
-
-      }
-    });
-  }
 
 
   late Animation _arrowAnimation;
@@ -249,7 +253,6 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
   List<bool> selectedControl = [];
   List<int> selectedIndexList = [];
   List followings = [];
-  int? _destinationIndex;
 
   void following(var i) async {
     var response = await http.get(Uri.parse(
@@ -272,10 +275,9 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
   Future refreshList() async {
     await Future.delayed(Duration(seconds: 1));
 
-    print("jj");
+
     setState(() {
 
-     // asyncMethod1();
     });
     return null;
   }
@@ -526,6 +528,7 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
                       ],
                     ),
                   ),
+
                   //like
                   Visibility(
                       visible: selectedIndexList.contains(index) ? true : false,
@@ -560,8 +563,6 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
                           ),
                         ],
                       )),
-
-
 
                   //follow
                   Visibility(
@@ -682,9 +683,7 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
                     ),
                   ),
 
-
-
-              //مينشن1
+                  //مينشن1
                   Visibility(
                     visible: _list[index].visible_like != null ? true : false,
                     child: Row(
@@ -728,33 +727,36 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
-                         Container(
-                           width: 190,
-                          child:Row(
-                            children: [
-                              Text(
-                                "There is a mention",
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w100,
-                                    color: Colors.white),
-                              ),
-                              Text(
-                                _list[index].time.toString(),
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w100,
-                                    color: Colors.white60),
-                              ),
-                            ],
-                          ),
 
-                         ),
+                            Row(
+                              //  mainAxisSize: MainAxisSize.max,
+                              //  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "There is a mention",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w100,
+                                      color: Colors.white),
+                                ),
+                                Text(
+                                  _list[index].time.toString(),
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w100,
+                                      color: Colors.white60),
 
+                                ),
+
+
+                              ],
+                            ),
 
                           ],
                         ),
-                        SizedBox(width: 50,),
+                        Expanded(
+                          child:SizedBox(width: MediaQuery.of(context).size.width*0.1,),
+                        ),
                       GestureDetector(
                       onTap: (){
                         setState(() {
@@ -830,10 +832,9 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
 
                       )),
 
-
-                  //1تعليقات
+                  //تعليقات النصوص
                   Visibility(
-                    visible: _list[index].comment != null ? true : false,
+                    visible: _list[index].title_comeent != null ? true : false,
                     child: Column(
                       children: [
                         Row(
@@ -950,7 +951,7 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
                     ),
                   ),
 
-                  //تعليقات2
+                  //تعليقات النصوص
                   Visibility(
                       visible:selectedIndexList.contains(index)? true : false,
                       child: Column(
@@ -973,10 +974,10 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
                           SizedBox(height: 10,),
                           Container(
                             width: MediaQuery.of(context).size.width*0.90,
-                            child:_list[index].comment!=null?Divider(color: Colors.white60,height: 2, thickness: 1,):null,
+                            child:_list[index].title_comeent!=null?Divider(color: Colors.white60,height: 2, thickness: 1,):null,
                           ),
                           Visibility(
-                            visible:_list[index].comment != null ? true : false,
+                            visible:_list[index].title_comeent != null ? true : false,
                             child: Container(
                               width: MediaQuery.of(context).size.width*0.90,
                               alignment:Alignment.bottomLeft,
@@ -994,7 +995,165 @@ class _accountState extends State<favorite>  with TickerProviderStateMixin {
 
                       )),
 
+                  //تعليقات الصور1
+                  Visibility(
+                    visible: _list[index].image_coment != null ? true : false,
+                    child: Column(
+                      children: [
+                        Row(
 
+                          children: [
+                            SizedBox(
+                              width: 15,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                print(_list[index].id);
+                              },
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(
+                                        "http://192.168.100.42:2000/get_trnd2_image?path=" +
+                                            _list[index].profile_photo2.toString()
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                                width:13
+                            ),
+                            Column(
+                              children: [
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width*0.57,
+                                  child: Text(
+                                    _list[index].username.toString(),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+
+                                Row(
+                                  //  mainAxisSize: MainAxisSize.max,
+                                  //  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "There is a comment",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w100,
+                                          color: Colors.white),
+                                    ),
+                                    Text(
+                                      _list[index].time.toString(),
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w100,
+                                          color: Colors.white60),
+
+                                    ),
+
+
+                                  ],
+                                ),
+
+
+
+                              ],
+                            ),
+                            Expanded(
+                              child:SizedBox(width: MediaQuery.of(context).size.width*0.1,),
+                            ),
+                            //  SizedBox(width: MediaQuery.of(context).size.width*0.1,),
+                            GestureDetector(
+                              onTap: (){
+                                setState(() {
+                                  if(!selectedIndexList.contains(index)) {
+
+                                    selectedIndexList.add(index);
+
+                                  } else {
+                                    selectedIndexList.remove(index);
+                                  }
+                                  /*
+                          _arrowAnimationController.isCompleted
+                              ? _arrowAnimationController.reverse()
+                              : _arrowAnimationController.forward();
+
+                           */
+
+                                });
+                              },
+                              child:selectedIndexList.contains(index)?Icon(
+                                Icons.expand_less,
+                                size: 30.0,
+                                color: Colors.white,
+                              ):Icon(
+                                Icons.expand_more,
+                                size: 30.0,
+                                color: Colors.white,
+                              ),
+                            ),
+
+
+
+                          ],
+                        ),
+
+
+                      ],
+                    ),
+                  ),
+
+                  //تعليقات الصور1
+                  Visibility(
+                      visible:selectedIndexList.contains(index)? true : false,
+                      child: Column(
+                        children: [
+                         SizedBox(height: 15,),
+                          Visibility(
+                            visible:  _list[index].profile_photo != null ? true : false,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width*0.90,
+                              height: MediaQuery.of(context).size.width*0.90,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                    "http://192.168.100.42:2000/get_trnd2_image?path=" +
+                                        _list[index].profile_photo.toString(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          Visibility(
+                            visible:_list[index].profile_photo != null ? true : false,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width*0.90,
+                              alignment:Alignment.bottomLeft,
+                              child: Text(
+                                _list[index].comment.toString() == null
+                                    ? ""
+                                    : _list[index].comment.toString(),
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.white),
+                              ),
+                            ),
+                          ),
+
+                        ],
+
+                      )),
                 ],
               ),
 

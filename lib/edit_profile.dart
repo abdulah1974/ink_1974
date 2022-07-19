@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart' as http1;
 import 'package:http/http.dart' as http2;
 import 'package:another_flushbar/flushbar.dart';
+import 'package:image_cropper/image_cropper.dart';
 class edit_profile extends StatefulWidget {
 
   late  int id;
@@ -90,65 +91,66 @@ class _edit_profileState extends State<edit_profile> {
 
 
 
-  late File _image = new File('your initial file');
-  final picker = ImagePicker();
+
   bool img=true;
-  Future<void> getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+ // late File _pickedFile = new File('your initial file');
+  XFile? _pickedFile;
+  CroppedFile? _croppedFile;
 
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-        img=false;
-      //  cropImage();
-      } else {
-
-      }
-    });
-  }
-
-  /*
-  cropImage() async {
-    File? croppedFile = (await ImageCropper().cropImage(
-        sourcePath: _image.path,
-
-        aspectRatioPresets: [
-          CropAspectRatioPreset.square,
-          CropAspectRatioPreset.ratio3x2,
-          CropAspectRatioPreset.original,
-          CropAspectRatioPreset.ratio4x3,
-          CropAspectRatioPreset.ratio16x9,
-
-        ],
-
-        cropStyle:CropStyle.circle,
-
-        // rotating/straightening
-        androidUiSettings:const AndroidUiSettings(
-          cropFrameColor:  Color.fromRGBO(1, 4, 30, 1),
-
-          toolbarTitle: 'ink',
-          toolbarColor:  Color.fromRGBO(1, 4, 30, 1),
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.square,
-          dimmedLayerColor:  Color.fromRGBO(1, 4, 30, 1),
-          hideBottomControls: true,
-          lockAspectRatio: true,
-          backgroundColor: Color.fromRGBO(1, 4, 30, 1),
-          showCropGrid: false,
-
-        )));
-    if (croppedFile != null) {
+  Future<void> _uploadImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
       setState(() {
-        _image = croppedFile;
-        print(croppedFile.path);
+        _pickedFile =  pickedFile;
+          img=false;
+         _cropImage();
       });
     }
   }
 
-   */
+  Future<void> _cropImage() async {
+    print("kll");
+    if (_pickedFile != null) {
+      var croppedFile = await ImageCropper().cropImage(
+          sourcePath: _pickedFile!.path,
+          compressFormat: ImageCompressFormat.jpg,
+          compressQuality: 100,
+          cropStyle:CropStyle.circle,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.square,
+            CropAspectRatioPreset.ratio3x2,
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.ratio4x3,
+            CropAspectRatioPreset.ratio16x9,
 
 
+
+          ],
+          uiSettings: [
+            AndroidUiSettings(
+              cropFrameColor: Color.fromRGBO(1, 4, 30, 1),
+              dimmedLayerColor: Color.fromRGBO(1, 4, 30, 1),
+              backgroundColor: Color.fromRGBO(1, 4, 30, 1),
+              toolbarTitle: 'Post',
+              toolbarColor: Color.fromRGBO(1, 4, 30, 1),
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.ratio7x5,
+              hideBottomControls: true,
+              lockAspectRatio: true,
+              showCropGrid: false,
+            ),
+          ]
+      );
+
+      if (croppedFile != null) {
+        setState(() {
+          _croppedFile = croppedFile;
+          print("_imageFile");
+        });
+      }
+    }
+
+  }
 
 
 
@@ -248,7 +250,7 @@ class _edit_profileState extends State<edit_profile> {
                   }
 
              if(username.text==""&&bio.text==""){
-
+           /*
                Flushbar(
                  margin: EdgeInsets.all(50),
                  borderRadius: BorderRadius.circular(8),
@@ -256,6 +258,7 @@ class _edit_profileState extends State<edit_profile> {
                  backgroundColor: Colors.red,
                  duration: Duration(seconds: 3),
                ).show(context);
+               */
 
              }else{
                print("hh");
@@ -264,7 +267,8 @@ class _edit_profileState extends State<edit_profile> {
 
 
 
-                 upload(_image);
+                 upload(File(_croppedFile!.path));
+                  Navigator.pop(context);
                  if(username.text==""){
                    print("den2");
                  }else{
@@ -284,7 +288,7 @@ class _edit_profileState extends State<edit_profile> {
          for(var i=0;i<pip.length;i++)
           GestureDetector(
 
-            child: Container(
+            child: _croppedFile==null?Container(
               width: 110,
               height: 100,
 
@@ -334,25 +338,32 @@ class _edit_profileState extends State<edit_profile> {
                       ),
 
 
+
                     ),
                   ),
                 ),
               ),
-              decoration: BoxDecoration(
 
-
-
+            ):Container(
+              width: 110,
+              height: 100,
+              decoration: new BoxDecoration(
                 shape: BoxShape.circle,
+
+
                 image: DecorationImage(
 
-                  fit: BoxFit.fill,
-                  image:FileImage(_image),
+                  fit: BoxFit.cover,
+                  image:FileImage(File(_croppedFile!.path)),
 
                 ),
               ),
+
+
+
             ),
             onTap: () {
-              getImage();
+             _uploadImage();
 
             },
 
